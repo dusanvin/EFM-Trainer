@@ -1,0 +1,11 @@
+# R / Shiny
+.Rhistory
+.RData
+.Rproj.user/
+
+# Secrets
+efm-app/.secrets/
+*.json
+
+# Sonstiges
+*.DS_Store
