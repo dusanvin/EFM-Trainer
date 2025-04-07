@@ -1,7 +1,7 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
+[Projektbeschreibung anzeigen](Projektbeschreibung_EFM-Trainer.md)
 
 ## 🔐 Authentifizierung
-
 Die Authentifizierung bei Google Sheets funktioniert über einen **Google Service Account**, verwaltet über:
 
 [Google Cloud IAM](https://console.cloud.google.com/iam-admin/iam?project=able-hull-366008)
