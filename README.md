@@ -1,6 +1,11 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
 [Projektbeschreibung anzeigen](Projektbeschreibung_EFM-Trainer.md)
 
+## Vorbereitung
+Öffne deine R-Konsole oder RStudio und führe aus:
+install.packages(c("shiny", "googlesheets4", "httr", "jsonlite"))
+
+
 ## 🔐 Authentifizierung
 Die Authentifizierung bei Google Sheets funktioniert über einen **Google Service Account**, verwaltet über:
 
@@ -132,6 +137,3 @@ efm-app/.secrets/
 ```
 
 ---
-
-## 🧑‍💻 Autor: Vorgänger*in  
-(Dein Name hier als Weiterentwickler*in)
