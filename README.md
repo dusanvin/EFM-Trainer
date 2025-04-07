@@ -1,6 +1,6 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
 [Projektbeschreibung anzeigen](Projektbeschreibung_EFM-Trainer.md)
-![EFM-Trainer]([http://url/to/img.png](https://digillab.uni-augsburg.de/wp-content/uploads/2025/04/efm-trainer.jpg))
+![efm-trainer](https://github.com/user-attachments/assets/7dfa8e48-e4b6-49eb-81d7-2442bc752ea0)
 
 
 ## Vorbereitung
