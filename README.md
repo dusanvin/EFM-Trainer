@@ -119,11 +119,13 @@ Dabei wird die **OpenAI API** mit `"gpt-3.5-turbo"` verwendet.
 3. Lokale R-Umgebung mit `shiny`, `googlesheets4`, `httr`, `jsonlite` usw. vorbereiten
 4. App starten mit:
 
-```r
-shiny::runApp("efm-app")
-```
+### Starte RStudio
+Öffne das Skript oder Console-Fenster
+Füge dort das ein:
+install.packages(c("shiny", "googlesheets4", "httr", "jsonlite"))
 
----
+### Danach kannst du die App mit diesem Befehl starten (in R):
+shiny::runApp("efm-app")
 
 ## 🚫 GitHub Hinweise
 
@@ -137,3 +139,9 @@ efm-app/.secrets/
 ```
 
 ---
+## Wichtig: Google Auth
+Beim ersten Zugriff auf das Google Sheet wird googlesheets4 den Service-Account-Key (die .json) verwenden. Stelle sicher, dass:
+- Die Datei vorhanden ist: efm-app/.secrets/able-hull-...json
+- Das Sheet für diesen Account freigegeben ist
+- Du in global.R den richtigen Pfad und die Sheet-ID drin hast
+
