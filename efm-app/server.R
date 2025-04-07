@@ -2601,9 +2601,9 @@ server <- function(input, output, session) {
     newQuestionText()
   }) 
   
-  output$textSolution <- renderUI({
-    HTML(showSolutionText())
-  }) 
+ output$textSolution <- renderUI({
+  HTML(markdown::markdownToHTML(text = showSolutionText(), fragment.only = TRUE))
+ })
   
   output$scaleText <- renderUI({
     HTML(scaleText())
