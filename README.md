@@ -1,5 +1,7 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
 [Projektbeschreibung anzeigen](Projektbeschreibung_EFM-Trainer.md)
+![EFM-Trainer]([http://url/to/img.png](https://digillab.uni-augsburg.de/wp-content/uploads/2025/04/efm-trainer.jpg))
+
 
 ## Vorbereitung
 Öffne deine R-Konsole oder RStudio und führe aus:
