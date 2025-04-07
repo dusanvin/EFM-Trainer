@@ -15,10 +15,14 @@ library(reader)
 library(MASS)
 library(httr)
 library(markdown)
+library(dotenv)
 
+dotenv::load_dot_env()
 
+Sys.setenv(OPENAI_API_KEY = Sys.getenv("OPENAI_API_KEY"))
+gs4_auth(path = Sys.getenv("GSHEET_PATH"))
+gsheetID <- Sys.getenv("GSHEET_ID")
 
-gsheetID <- "1DOhttBbZnAmYLWvToB5GuCTh9tMGCdE_aCOziFA7Iv4"
 
 sidebar <- shinydashboard::dashboardSidebar(
   collapsed = FALSE,
