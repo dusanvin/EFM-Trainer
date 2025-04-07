@@ -23,7 +23,7 @@ plotWidthVar <- 0.8
 
 
 server <- function(input, output, session) {
-
+  
   lickert1DF <- data.frame(
     Variable = c("Vari","","","",""),
     Wert = c (1:5),
@@ -56,6 +56,7 @@ server <- function(input, output, session) {
   values$showU_testSol <- logical()
   values$doWilcoxon <- logical()
   values$showWilcoxonSol <- logical()
+  
   values$users_data <- NULL
   
   scaleTableDF <- reactiveVal()
@@ -78,7 +79,6 @@ server <- function(input, output, session) {
   ANOVAGruppe2 <- reactiveVal()
   currentTest <- reactiveVal()
   isTwoFac <- reactiveVal()
-  t_testCaseGPT <- reactiveVal()
   
   show_modal_spinner(spin = "orbit")
   values$kontext <- loadKontextSheet()
@@ -87,48 +87,48 @@ server <- function(input, output, session) {
   values$ANOVAGruppen <- loadANOVAGrpSheet()
   remove_modal_spinner()
   
-    onSessionStart = isolate({
-      values$users_data$SessionStart <- Sys.time()
-      values$users_data$NewTaskCount <- -1
-    })
-
+  onSessionStart = isolate({
+    values$users_data$SessionStart <- Sys.time()
+    values$users_data$NewTaskCount <- -1
+  })
+  
   session$onSessionEnded(function() {
     isolate({
       
-    users_dataOld <- NULL
-    currentCount <- NULL
-    validJson <- NULL
-    if (file.exists("users_data.json")) {
-      file <- reader("users_data.json")
-      validJson <- validate(file)
-    } else {
-      validJson <- FALSE
-    }
-    
-    if (validJson) {
-      users_dataOld <- fromJSON("users_data.json") 
-      currentCount <- tail(users_dataOld$SessionCount, n = 1)
-    } else {
-      currentCount = 0
-    }
-
-    values$users_data$SessionCount <- as.numeric(currentCount+1)
-    values$users_data$SessionDuration <- round(as.numeric(difftime(Sys.time(), values$users_data$SessionStart), units = "secs"),0)
-    sessionDurationPeriod <- paste(seconds_to_period(as.numeric(values$users_data$SessionDuration)))
-    values$users_data$SessionDuration <- paste(toJSON(sessionDurationPeriod))
-    values$users_data$SessionStart <- paste(toJSON(Sys.time(), POSIXt="ISO8601"))
-    values$users_data <- as.data.frame(values$users_data)
-    values$users_data <- values$users_data[,c("SessionCount", "SessionStart","SessionDuration","NewTaskCount")]
-    
-    newUsersData <- NULL
-    if (validJson) {
-      newUsersData <- rbind.data.frame(as.data.frame(users_dataOld), values$users_data)
-    } else {
-      newUsersData <- values$users_data
-    } 
-
-    users_dataJSON <- toJSON(as.list(newUsersData), force = TRUE)
-    write(users_dataJSON, "users_data.json")
+      users_dataOld <- NULL
+      currentCount <- NULL
+      validJson <- NULL
+      if (file.exists("users_data.json")) {
+        file <- reader("users_data.json")
+        validJson <- validate(file)
+      } else {
+        validJson <- FALSE
+      }
+      
+      if (validJson) {
+        users_dataOld <- fromJSON("users_data.json") 
+        currentCount <- tail(users_dataOld$SessionCount, n = 1)
+      } else {
+        currentCount = 0
+      }
+      
+      values$users_data$SessionCount <- as.numeric(currentCount+1)
+      values$users_data$SessionDuration <- round(as.numeric(difftime(Sys.time(), values$users_data$SessionStart), units = "secs"),0)
+      sessionDurationPeriod <- paste(seconds_to_period(as.numeric(values$users_data$SessionDuration)))
+      values$users_data$SessionDuration <- paste(toJSON(sessionDurationPeriod))
+      values$users_data$SessionStart <- paste(toJSON(Sys.time(), POSIXt="ISO8601"))
+      values$users_data <- as.data.frame(values$users_data)
+      values$users_data <- values$users_data[,c("SessionCount", "SessionStart","SessionDuration","NewTaskCount")]
+      
+      newUsersData <- NULL
+      if (validJson) {
+        newUsersData <- rbind.data.frame(as.data.frame(users_dataOld), values$users_data)
+      } else {
+        newUsersData <- values$users_data
+      } 
+      
+      users_dataJSON <- toJSON(as.list(newUsersData), force = TRUE)
+      write(users_dataJSON, "users_data.json")
     })
   })
   
@@ -146,7 +146,7 @@ server <- function(input, output, session) {
     } else if (nchar(as.character(value))==3) {
       value <- paste(c(value,"00"), collapse = "")  
     }
-
+    
     value <- strsplit(value, "\\.")
     valuePerDec <- substr(value[[1]][2], start = 1, stop = 2)
     valuePerFrac <- substr(value[[1]][2], start = 3, stop = 4)
@@ -163,6 +163,35 @@ server <- function(input, output, session) {
   }
   
   getQuestionText <- function() {
+    # questionText <- NULL
+    # connector <- NULL
+    # text2 <- NULL
+    # aufgabe <- values$aufgabe
+    # text1Src = aufgabe[aufgabe$Analyse == input$selectTest,c("Thema","Text1","Item_AV")] 
+    # text1SrcForPrereq <- data.frame()
+    # if(input$checkPrereq == TRUE){ 
+    #   text1SrcForPrereq = text1Src[,c("Text1","Item_AV")]
+    # } else {
+    #   text1SrcForPrereq = text1Src[text1Src$Thema != "Voraussetzung für Methode eingehalten",c("Text1","Item_AV")]
+    # }
+    # 
+    # rndtext1Src = as.data.frame(text1SrcForPrereq["Text1"]) #!(is.na(text1SrcForPrereq)
+    # rndtext1Src <- rndtext1Src[,1]
+    # rndText1 = sample(rndtext1Src,1)
+    # itemav = as.data.frame(text1SrcForPrereq[text1SrcForPrereq$Text1 == rndText1,"Item_AV"])
+    # itemav <- itemav[1,1]
+    # 
+    # if (!is.na(itemav)) {
+    #   connector = aufgabe[aufgabe$Text1 == rndText1,"Connector"]
+    #   connector <- connector[1, 1]
+    #   text2 = aufgabe[aufgabe$Text1 == rndText1,"Text2"]
+    #   text2 <- text2[1, 1]
+    #   questionText <- paste(c(rndText1, UV(), connector, AV(), text2), collapse = " ")
+    # } else {
+    #   questionText <- rndText1
+    # }
+    #return(aufgabeText) 
+    
     simpleQuestionText <- "Wie würden Sie diese Ergebnisse berichten?"
     return(simpleQuestionText)
   }
@@ -171,7 +200,7 @@ server <- function(input, output, session) {
     set.seed(NULL) 
     kontext <- values$kontext
     variablen <- values$variablen
-     
+    
     #Story
     story = kontext[kontext$Analyse == currentTest(),"Story"] 
     story = as.data.frame(story)
@@ -186,157 +215,157 @@ server <- function(input, output, session) {
     ANOVAGruppe <- NULL
     if (currentTest() != "ANOVA") {
       
-    uVarsForScale <- NULL
-    rndAuspr1 <- NULL
-    if (currentTest() == "t-Test"){
-      uVarsForScale <- variablen[variablen$Skalierung_UV == "binär",c("Kategorie_UV","Variable_UV","Skalierung_UV")]
-    } else if(currentTest() == "Korrelation"){
-      uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
-    } else if(currentTest() == "Regression"){
-      uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
-    } else if(currentTest() == "log. Regression"){
-      uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] #
-    } else if(currentTest() == "Chi-Quadrat"){
-      uVarsForScale <- variablen[variablen$Skalierung_UV == "binär",c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
-    } else if (currentTest() == "Paired t-Test"){
-      uVarsForScale <- variablen[variablen$VorherNachher_UV == "1",c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
-    }
-    
-    
-    uVarsForContext <- data.frame()
-
-    if(currentTest() == "Chi-Quadrat") {
-      uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV == "Krankheit","Variable_UV"] 
-    } else if (kontextclass == "Didaktik & Lernen"){ 
-      uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV == "Didaktik und Lernen","Variable_UV"] 
-    } else {
-      uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV != "Didaktik und Lernen","Variable_UV"]
-    } 
-    indVars <- NULL
-    
-    uvSrc <- uVarsForContext
-    uvSrc = as.data.frame(uvSrc)
-    uvSrc = uvSrc[!(is.na(uvSrc))]
-    
-    uvDF <- NULL
-    indVars <- NULL
-    if(currentTest() == "Regression" | currentTest() == "log. Regression"){
-      indVars <- sample(2:4, 1)
-      uvDF <- data.frame(matrix(ncol = 3, nrow = 0))
-      colnames(uvDF) <- c("Artikel", "Ausprägung", "Variable")
-    } else {
-      indVars <- 1
-    }
-    rndUv <- NULL
-    rndAuspr1 <- NULL
-    for (i in 1:indVars) { 
-      set.seed(NULL)  
-      rndUv = sample(uvSrc,1)
-
-      set.seed(NULL) 
-      if(currentTest() == "Regression" | currentTest() == "Korrelation" | currentTest() == "log. Regression"){
-        if (currentTest() == "Regression" | currentTest() == "log. Regression") {
-          uvDF[i, "Variable"] = rndUv
-        }
-
-        if (i>=2) {
-          set.seed(NULL) 
-          while (any(duplicated(uvDF$Variable)) == TRUE) {
-            rndUv = sample(uvSrc,1)  
+      uVarsForScale <- NULL
+      rndAuspr1 <- NULL
+      if (currentTest() == "t-Test"){
+        uVarsForScale <- variablen[variablen$Skalierung_UV == "binär",c("Kategorie_UV","Variable_UV","Skalierung_UV")] #nur binäre Variablen
+      } else if(currentTest() == "Korrelation"){
+        uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
+      } else if(currentTest() == "Regression"){
+        uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
+      } else if(currentTest() == "log. Regression"){
+        uVarsForScale <- variablen[variablen$Skalierung_UV == "rational" | variablen$Skalierung_UV == "intervall" ,c("Kategorie_UV","Variable_UV","Skalierung_UV")] #
+      } else if(currentTest() == "Chi-Quadrat"){
+        uVarsForScale <- variablen[variablen$Skalierung_UV == "binär",c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
+      } else if (currentTest() == "Paired t-Test"){
+        uVarsForScale <- variablen[variablen$VorherNachher_UV == "1",c("Kategorie_UV","Variable_UV","Skalierung_UV")] 
+      }
+      
+      
+      uVarsForContext <- data.frame()
+      
+      if(currentTest() == "Chi-Quadrat") {
+        uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV == "Krankheit","Variable_UV"] 
+      } else if (kontextclass == "Didaktik & Lernen"){ 
+        uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV == "Didaktik und Lernen","Variable_UV"] 
+      } else {
+        uVarsForContext = uVarsForScale[uVarsForScale$Kategorie_UV != "Didaktik und Lernen","Variable_UV"]
+      } 
+      indVars <- NULL
+      
+      uvSrc <- uVarsForContext
+      uvSrc = as.data.frame(uvSrc)
+      uvSrc = uvSrc[!(is.na(uvSrc))]
+      
+      uvDF <- NULL
+      indVars <- NULL
+      if(currentTest() == "Regression" | currentTest() == "log. Regression"){
+        indVars <- sample(2:4, 1)
+        uvDF <- data.frame(matrix(ncol = 3, nrow = 0))#
+        colnames(uvDF) <- c("Artikel", "Ausprägung", "Variable")
+      } else {
+        indVars <- 1
+      }
+      rndUv <- NULL
+      rndAuspr1 <- NULL
+      for (i in 1:indVars) { 
+        set.seed(NULL)  
+        rndUv = sample(uvSrc,1)
+        
+        set.seed(NULL) 
+        if(currentTest() == "Regression" | currentTest() == "Korrelation" | currentTest() == "log. Regression"){
+          if (currentTest() == "Regression" | currentTest() == "log. Regression") {
             uvDF[i, "Variable"] = rndUv
           }
-        }
-        auspr_basis_pos <- kontext[,"Ausprägung_Basis_positiv"]
-        auspr_basis_pos <- auspr_basis_pos[!is.na(auspr_basis_pos)]
-        validAuspr <- NULL
-
-        for (auspr in auspr_basis_pos) {
-          auspr <- paste(c(auspr,"_UV"), collapse = "")
-          isvalid <- as.logical(as.numeric(variablen[variablen$Variable_UV == rndUv,auspr]))
-          if (isvalid) {
-            auspr <- substr(auspr, 1, nchar(auspr)-3)
-            validAuspr <- c(validAuspr, auspr)
-          }
-        }
-
-        ausprBasis <- NULL
-
-        if (is.null(validAuspr)) {
-          rndAuspr1 <- ""
-        } else {
-          ausprBasis <- sample(validAuspr,1)
-          rndAuspr1 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,"Ausprägung_Basis_X"]
-          rndAuspr1 = as.character(rndAuspr1[1, 1])
-        }
-      }
-
-      "Skalierung_UV"
-      skalierungUV = variablen[variablen$Variable_UV == rndUv,"Skalierung_UV"]
-      skalierungUV = as.character(skalierungUV[1, 1])
-      
-      geschlechtUV = variablen[variablen$Variable_UV == rndUv,"Geschlecht_UV"]
-      geschlechtUV = as.character(geschlechtUV[1, 1])
-      geschlechtUV(geschlechtUV)
-      
-      pluralUV = variablen[variablen$Variable_UV == rndUv,"Plural_UV"]
-      pluralUV = as.character(pluralUV[1, 1])
-      
-      artikelUV = "ein"
-      hatArtikelBOOL <- NULL
-      if (casusVar1 == "Dativ") { #Trigger Dativ für Variable1
-        hatArtikel <- variablen[variablen$Variable_UV == rndUv,"HatArtikelDativ_UV"]
-        rndAuspr1 = paste(c(rndAuspr1, "n"), collapse = "")
-        if (hatArtikel == "1") { 
-          hatArtikelBOOL = TRUE
-          if(geschlechtUV == "f") {
-            artikelUV = paste(c(artikelUV, "er"), collapse = "")
-          } else if(geschlechtUV == "m") {
-            artikelUV = paste(c(artikelUV, "em"), collapse = "")
-          } else if(geschlechtUV == "n") {
-            artikelUV = paste(c(artikelUV, "em"), collapse = "")
-          }
-        } else {
-          hatArtikelBOOL = FALSE
-          artikelUV = ""
-        } 
-        
-      } else if(casusVar1 == "Nominativ"){ # Trigger Nominativ für Variable1
-        hatArtikel <- variablen[variablen$Variable_UV == rndUv,"HatArtikelNominativ_UV"]
-        if (hatArtikel == "1") { 
-          if(geschlechtUV == "f") {
-            if (pluralUV == "1") {
-              hatArtikelBOOL = FALSE
-              artikelUV = ""
-            } else {
-              hatArtikelBOOL = TRUE
-              artikelUV = paste(c(artikelUV, "e"), collapse = "")
+          
+          if (i>=2) {
+            set.seed(NULL) 
+            while (any(duplicated(uvDF$Variable)) == TRUE) {
+              rndUv = sample(uvSrc,1)  
+              uvDF[i, "Variable"] = rndUv
             }
-          } else if(geschlechtUV == "m"){
-            rndAuspr1 = paste(c(rndAuspr1, "r"), collapse = "")
-            artikelUV = "ein"
-            hatArtikelBOOL = TRUE
-          } else if(geschlechtUV == "n"){
-            rndAuspr1 = paste(c(rndAuspr1, "s"), collapse = "")
-            artikelUV = "ein"
-            hatArtikelBOOL = TRUE
           }
+          auspr_basis_pos <- kontext[,"Ausprägung_Basis_positiv"]
+          auspr_basis_pos <- auspr_basis_pos[!is.na(auspr_basis_pos)]
+          validAuspr <- NULL
+          
+          for (auspr in auspr_basis_pos) {
+            auspr <- paste(c(auspr,"_UV"), collapse = "")
+            isvalid <- as.logical(as.numeric(variablen[variablen$Variable_UV == rndUv,auspr])) #rndUv
+            if (isvalid) {
+              auspr <- substr(auspr, 1, nchar(auspr)-3)
+              validAuspr <- c(validAuspr, auspr)
+            }
+          }
+          
+          ausprBasis <- NULL
+          
+          if (is.null(validAuspr)) {
+            rndAuspr1 <- ""
+          } else {
+            ausprBasis <- sample(validAuspr,1)
+            rndAuspr1 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,"Ausprägung_Basis_X"]
+            rndAuspr1 = as.character(rndAuspr1[1, 1])
+          }
+        }
+        
+        "Skalierung_UV"
+        skalierungUV = variablen[variablen$Variable_UV == rndUv,"Skalierung_UV"]
+        skalierungUV = as.character(skalierungUV[1, 1])
+        
+        geschlechtUV = variablen[variablen$Variable_UV == rndUv,"Geschlecht_UV"]
+        geschlechtUV = as.character(geschlechtUV[1, 1])
+        geschlechtUV(geschlechtUV)
+        
+        pluralUV = variablen[variablen$Variable_UV == rndUv,"Plural_UV"]
+        pluralUV = as.character(pluralUV[1, 1])
+        
+        artikelUV = "ein"
+        hatArtikelBOOL <- NULL
+        if (casusVar1 == "Dativ") { #Trigger Dativ für Variable1
+          hatArtikel <- variablen[variablen$Variable_UV == rndUv,"HatArtikelDativ_UV"]
+          rndAuspr1 = paste(c(rndAuspr1, "n"), collapse = "")
+          if (hatArtikel == "1") { 
+            hatArtikelBOOL = TRUE
+            if(geschlechtUV == "f") {
+              artikelUV = paste(c(artikelUV, "er"), collapse = "")
+            } else if(geschlechtUV == "m") {
+              artikelUV = paste(c(artikelUV, "em"), collapse = "")
+            } else if(geschlechtUV == "n") {
+              artikelUV = paste(c(artikelUV, "em"), collapse = "")
+            }
+          } else {
+            hatArtikelBOOL = FALSE
+            artikelUV = ""
+          } 
+          
+        } else if(casusVar1 == "Nominativ"){ # Trigger Nominativ für Variable1
+          hatArtikel <- variablen[variablen$Variable_UV == rndUv,"HatArtikelNominativ_UV"]
+          if (hatArtikel == "1") { 
+            if(geschlechtUV == "f") {
+              if (pluralUV == "1") {
+                hatArtikelBOOL = FALSE
+                artikelUV = ""
+              } else {
+                hatArtikelBOOL = TRUE
+                artikelUV = paste(c(artikelUV, "e"), collapse = "")
+              }
+            } else if(geschlechtUV == "m"){
+              rndAuspr1 = paste(c(rndAuspr1, "r"), collapse = "")
+              artikelUV = "ein"
+              hatArtikelBOOL = TRUE
+            } else if(geschlechtUV == "n"){
+              rndAuspr1 = paste(c(rndAuspr1, "s"), collapse = "")
+              artikelUV = "ein"
+              hatArtikelBOOL = TRUE
+            }
+          } else {
+            if(geschlechtUV == "n"){
+              rndAuspr1 = paste(c(rndAuspr1, "s"), collapse = "")
+            }
+            artikelUV = ""
+            hatArtikelBOOL = FALSE
+          }
+        }
+        if(currentTest() == "Regression" | currentTest() == "log. Regression"){
+          uvDF[i, "Artikel"] = artikelUV
+          uvDF[i, "Ausprägung"] = rndAuspr1
+          
         } else {
-          if(geschlechtUV == "n"){
-            rndAuspr1 = paste(c(rndAuspr1, "s"), collapse = "")
-          }
-          artikelUV = ""
-          hatArtikelBOOL = FALSE
+          UV(rndUv)
         }
       }
-      if(currentTest() == "Regression" | currentTest() == "log. Regression"){
-        uvDF[i, "Artikel"] = artikelUV
-        uvDF[i, "Ausprägung"] = rndAuspr1
-        
-      } else {
-        UV(rndUv)
-      }
-    }
-    
+      
     } else if (currentTest() == "ANOVA") {
       gruppen <- values$ANOVAGruppen$Name
       gruppen = as.data.frame(gruppen)
@@ -351,7 +380,7 @@ server <- function(input, output, session) {
       ANOVAGruppe2(ANOVAGruppe2)
       
     }
-
+    
     
     #Connector1
     conn1ColumnSrc <- NULL
@@ -362,163 +391,165 @@ server <- function(input, output, session) {
     } else if(currentTest() == "Chi-Quadrat" ) {
       conn1ColumnSrc = "Connector1_A"
     } else {
-    if (!(is.na(kontext[kontext$Story == rndstory & kontext$Analyse == currentTest(),"Connector1_D"]))) { 
-      conn1ColumnSrc = c("Connector1_A","Connector1_B","Connector1_C","Connector1_D","Connector1_E")
-    } else {
-      conn1ColumnSrc = c("Connector1_A","Connector1_B","Connector1_C","Connector1_E")
+      if (!(is.na(kontext[kontext$Story == rndstory & kontext$Analyse == currentTest(),"Connector1_D"]))) { 
+        conn1ColumnSrc = c("Connector1_A","Connector1_B","Connector1_C","Connector1_D","Connector1_E")
+      } else {
+        conn1ColumnSrc = c("Connector1_A","Connector1_B","Connector1_C","Connector1_E")
+      }
     }
-    }
-    conn1Column = sample(conn1ColumnSrc,1) 
+    conn1Column = sample(conn1ColumnSrc,1) #"Connector1_D" #
     rndConn1 = kontext[kontext$Story == rndstory & kontext$Analyse == currentTest(),conn1Column] 
     
     if(currentTest() != "Chi-Quadrat"){
-
-    #Abhängige Variable
-    avSrc <- NULL
-    if (currentTest() == "log. Regression") {
-      avSrc = variablen[variablen$Skalierung_AV == "Binär","Variable_AV"] 
-    } else if(currentTest() == "ANOVA") {
-      avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Ordinal"| variablen$Skalierung_AV == "Intervall","Variable_AV"] 
-    } else if(currentTest() == "Korrelation"){
-      avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall","Variable_AV"] 
-    } else if(currentTest() == "t-Test" | currentTest() == "Regression") {
-      avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall","Variable_AV"] 
-    } else if (currentTest() == "Paired t-Test") {
-      avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall",c("Variable_AV","VorherNachher_AV")] 
-      avSrc = avSrc[avSrc$VorherNachher_AV == "1","Variable_AV"]
-    } else {
-     avSrc = variablen[,"Variable_AV"] 
-    }
-
-    avSrc = as.data.frame(avSrc)
-    avSrc = avSrc[!(is.na(avSrc))]
-    rndAv = sample(avSrc,1)
-
-    AV(rndAv)
-    
-    skalierungAV = variablen[variablen$Variable_AV == rndAv,"Skalierung_AV"]
-    skalierungAV = as.character(skalierungAV[1, 1])
-    
-    geschlechtAV = variablen[variablen$Variable_AV == rndAv,"Geschlecht_AV"]
-    geschlechtAV = as.character(geschlechtAV[1, 1])
-    
-    
-    pluralAV = variablen[variablen$Variable_AV == rndAv,"Plural_AV"]
-    pluralAV = as.character(pluralAV[1, 1])
-    
-    #Ausprägung2
-    
-    auspr_basis_pos <- kontext[,"Ausprägung_Basis_positiv"]
-    auspr_basis_pos <- auspr_basis_pos[!is.na(auspr_basis_pos)]
-    validAuspr <- NULL
-    for (auspr in auspr_basis_pos) {
-      auspr <- paste(c(auspr,"_AV"), collapse = "")
-      isvalid <- variablen[variablen$Variable_AV == rndAv,auspr]
-      isvalid = as.numeric(as.character(isvalid[1, 1]))
       
-
-      isvalid <- as.logical(isvalid)
-      if (isvalid) {
-        auspr <- substr(auspr, 1, nchar(auspr)-3)
-        validAuspr <- c(validAuspr, auspr)
-      }
-    }
-    
-    rndAuspr2 <- NULL
-    if (currentTest() == "ANOVA") { 
-      rndAuspr2 <- "unterschiedlich"
-    } else {
-
-    ausprBasis <- NULL
-    if (is.null(validAuspr)) {
-      rndAuspr1 <- ""
-    } else {
-      ausprBasis <- sample(validAuspr,1)
-      
-      if (rndAv=="Anzahl an Fehlern im Diktat") {
-        rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_positiv","Ausprägung_Comperativ_passiv_positiv")]
-        rndAuspr2 = as.character(rndAuspr2[1, 1])
+      #Abhängige Variable
+      avSrc <- NULL
+      if (currentTest() == "log. Regression") {
+        avSrc = variablen[variablen$Skalierung_AV == "Binär","Variable_AV"] 
+      } else if(currentTest() == "ANOVA") {
+        avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Ordinal"| variablen$Skalierung_AV == "Intervall","Variable_AV"] 
+      } else if(currentTest() == "Korrelation"){
+        avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall","Variable_AV"] 
+      } else if(currentTest() == "t-Test" | currentTest() == "Regression") {
+        avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall","Variable_AV"] 
+      } else if (currentTest() == "Paired t-Test") {
+        avSrc = variablen[variablen$Skalierung_AV == "Rational" | variablen$Skalierung_AV == "Intervall",c("Variable_AV","VorherNachher_AV")] 
+        avSrc = avSrc[avSrc$VorherNachher_AV == "1","Variable_AV"]
       } else {
-        if (conn1Column == "Connector1_B") {
-          rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_negativ","Ausprägung_Comperativ_passiv_negativ")]
-          rndAuspr2 = as.character(rndAuspr2[1, 1])
+        avSrc = variablen[,"Variable_AV"] 
+      }
+      
+      avSrc = as.data.frame(avSrc)
+      avSrc = avSrc[!(is.na(avSrc))]
+      rndAv = sample(avSrc,1)
+      #AVtest
+      # rndAv <- NULL
+      # rndAv <- "durchschnittlichen Jahreseinkommen"
+      AV(rndAv)
+      
+      skalierungAV = variablen[variablen$Variable_AV == rndAv,"Skalierung_AV"]
+      skalierungAV = as.character(skalierungAV[1, 1])
+      
+      geschlechtAV = variablen[variablen$Variable_AV == rndAv,"Geschlecht_AV"]
+      geschlechtAV = as.character(geschlechtAV[1, 1])
+      
+      
+      pluralAV = variablen[variablen$Variable_AV == rndAv,"Plural_AV"]
+      pluralAV = as.character(pluralAV[1, 1])
+      
+      #Ausprägung2
+      
+      auspr_basis_pos <- kontext[,"Ausprägung_Basis_positiv"]
+      auspr_basis_pos <- auspr_basis_pos[!is.na(auspr_basis_pos)]
+      validAuspr <- NULL
+      for (auspr in auspr_basis_pos) {
+        auspr <- paste(c(auspr,"_AV"), collapse = "")
+        isvalid <- variablen[variablen$Variable_AV == rndAv,auspr]
+        isvalid = as.numeric(as.character(isvalid[1, 1]))
+        
+        
+        isvalid <- as.logical(isvalid)
+        if (isvalid) {
+          auspr <- substr(auspr, 1, nchar(auspr)-3)
+          validAuspr <- c(validAuspr, auspr)
+        }
+      }
+      
+      rndAuspr2 <- NULL
+      if (currentTest() == "ANOVA") { 
+        rndAuspr2 <- "unterschiedlich"
+      } else {
+        
+        ausprBasis <- NULL
+        if (is.null(validAuspr)) {
+          rndAuspr1 <- ""
         } else {
-          rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_negativ","Ausprägung_Comperativ_aktiv_positiv","Ausprägung_Comperativ_passiv_negativ","Ausprägung_Comperativ_passiv_positiv")]
-          rndAuspr2 = as.character(rndAuspr2[1, 1])
+          ausprBasis <- sample(validAuspr,1)
+          
+          if (rndAv=="Anzahl an Fehlern im Diktat") {
+            rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_positiv","Ausprägung_Comperativ_passiv_positiv")]
+            rndAuspr2 = as.character(rndAuspr2[1, 1])
+          } else {
+            if (conn1Column == "Connector1_B") {
+              rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_negativ","Ausprägung_Comperativ_passiv_negativ")]
+              rndAuspr2 = as.character(rndAuspr2[1, 1])
+            } else {
+              rndAuspr2 <- kontext[kontext$Ausprägung_Basis_positiv == ausprBasis,c("Ausprägung_Comperativ_aktiv_negativ","Ausprägung_Comperativ_aktiv_positiv","Ausprägung_Comperativ_passiv_negativ","Ausprägung_Comperativ_passiv_positiv")]
+              rndAuspr2 = as.character(rndAuspr2[1, 1])
+            }
+          }
+          auspr2Index <- which(kontext==rndAuspr2, arr.ind=TRUE)
+          auspr2PosNeg <- colnames(kontext)[auspr2Index[2]]
+          if (auspr2PosNeg=="Ausprägung_Comperativ_aktiv_negativ" || auspr2PosNeg=="Ausprägung_Comperativ_passiv_negativ") {
+            auspr2PosNeg("negativ")
+          } else if (auspr2PosNeg=="Ausprägung_Comperativ_aktiv_positiv" || auspr2PosNeg=="Ausprägung_Comperativ_passiv_positiv") {
+            auspr2PosNeg("positiv")
+          }
+          
         }
       }
-      auspr2Index <- which(kontext==rndAuspr2, arr.ind=TRUE)
-      auspr2PosNeg <- colnames(kontext)[auspr2Index[2]]
-      if (auspr2PosNeg=="Ausprägung_Comperativ_aktiv_negativ" || auspr2PosNeg=="Ausprägung_Comperativ_passiv_negativ") {
-        auspr2PosNeg("negativ")
-      } else if (auspr2PosNeg=="Ausprägung_Comperativ_aktiv_positiv" || auspr2PosNeg=="Ausprägung_Comperativ_passiv_positiv") {
-        auspr2PosNeg("positiv")
-      }
-
-    }
-    }
-    
-    AValternative =  variablen[variablen$Variable_AV == rndAv,"Variable_AV_alternativ"]
-    if (sum(!is.na(AValternative))==1) {
-     AValternative = as.character(AValternative[1, 1])
-     AVhatAlt(TRUE)
-     AValt(AValternative)
-    if (conn1Column == "Connector1_C" || conn1Column == "Connector1_E" | conn1Column == "Connector1_A") {
-      if ((currentTest() == "ANOVA" | currentTest() == "Korrelation" | currentTest() == "Regression" | currentTest() == "t-Test") & (conn1Column == "Connector1_A")) {
-      } else {
-        rndAv = AValternative
-      }
-    }
-
-    } else
-    { AVhatAlt(FALSE) }
-
-    
-    artikelAV <- NULL
-    if (conn1Column =="Connector1_A" ||  conn1Column =="Connector1_B" ||  conn1Column =="Connector1_D") { #Dativ
-      if(geschlechtAV == "f") {
-        if (pluralAV == "0") {
-          artikelAV = "einer"
-          rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
-        } else { 
-          artikelAV = ""
-          rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
+      
+      AValternative =  variablen[variablen$Variable_AV == rndAv,"Variable_AV_alternativ"]
+      if (sum(!is.na(AValternative))==1) {
+        AValternative = as.character(AValternative[1, 1])
+        AVhatAlt(TRUE)
+        AValt(AValternative)
+        if (conn1Column == "Connector1_C" || conn1Column == "Connector1_E" | conn1Column == "Connector1_A") {
+          if ((currentTest() == "ANOVA" | currentTest() == "Korrelation" | currentTest() == "Regression" | currentTest() == "t-Test") & (conn1Column == "Connector1_A")) {
+          } else {
+            rndAv = AValternative
+          }
         }
-      } else if(geschlechtAV == "n"){
-        if (pluralAV == "0") {
+        
+      } else
+      { AVhatAlt(FALSE) }
+      
+      
+      artikelAV <- NULL
+      if (conn1Column =="Connector1_A" ||  conn1Column =="Connector1_B" ||  conn1Column =="Connector1_D") { #Dativ
+        if(geschlechtAV == "f") {
+          if (pluralAV == "0") {
+            artikelAV = "einer"
+            rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
+          } else { 
+            artikelAV = ""
+            rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
+          }
+        } else if(geschlechtAV == "n"){
+          if (pluralAV == "0") {
+            artikelAV = "einem"
+            rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
+          } else { 
+            artikelAV = ""
+            rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
+          }
+        } else if(geschlechtAV == "m"){
           artikelAV = "einem"
           rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
-        } else { 
-          artikelAV = ""
+        }
+      } else { #Connector1_C,Connector1_D,Connector1_E #Akkusativ
+        if(geschlechtAV == "f") {
+          if (pluralAV == "0") {
+            artikelAV = "eine"
+            rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
+          } else { 
+            artikelAV = ""
+            rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
+          }
+        } else if (geschlechtAV == "n") {
+          if (pluralAV == "0") {
+            artikelAV = "ein"
+            rndAuspr2 = paste(c(rndAuspr2, "es"), collapse = "")
+          } else { 
+            artikelAV = ""
+            rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
+          }
+        } else if (geschlechtAV == "m") {
+          artikelAV = "einen"
           rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
         }
-      } else if(geschlechtAV == "m"){
-        artikelAV = "einem"
-        rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
       }
-    } else { #Connector1_C,Connector1_D,Connector1_E #Akkusativ
-      if(geschlechtAV == "f") {
-        if (pluralAV == "0") {
-          artikelAV = "eine"
-          rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
-        } else { 
-          artikelAV = ""
-          rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
-        }
-      } else if (geschlechtAV == "n") {
-        if (pluralAV == "0") {
-          artikelAV = "ein"
-          rndAuspr2 = paste(c(rndAuspr2, "es"), collapse = "")
-        } else { 
-          artikelAV = ""
-          rndAuspr2 = paste(c(rndAuspr2, "e"), collapse = "")
-        }
-      } else if (geschlechtAV == "m") {
-        artikelAV = "einen"
-        rndAuspr2 = paste(c(rndAuspr2, "en"), collapse = "")
-      }
-    }
-    
+      
     }
     
     rndConn2 <- NULL
@@ -540,13 +571,13 @@ server <- function(input, output, session) {
     
     taskText <- NULL
     
-    if(currentTest() == "t-Test") {
+    if(currentTest() == "t-Test") { #t-test
       if (hatArtikelBOOL==TRUE) {
         taskText <- paste(c(rndstory, artikelUV, rndUv, rndConn1, artikelAV, rndAuspr2, rndAv, rndConn2, überleitung), collapse = " ")
       } else {
         taskText <- paste(c(rndstory, rndUv, rndConn1, artikelAV, rndAuspr2, rndAv, rndConn2, überleitung), collapse = " ")
       }
-
+      
     }  else if (currentTest() == "Paired t-Test"){
       if (hatArtikelBOOL==TRUE) {
         taskText <- paste(c(rndstory, artikelUV, rndUv, rndConn1, artikelAV, rndAuspr2, rndAv, rndConn2, überleitung), collapse = " ")
@@ -589,7 +620,7 @@ server <- function(input, output, session) {
       ANOVAGruppen <- values$ANOVAGruppen
       ANOVAGeschlecht <- ANOVAGruppen[ANOVAGruppen$Name == ANOVAGruppe(),"Geschlecht"]
       ANOVAGeschlecht = as.character(ANOVAGeschlecht[1, 1])
-
+      
       Auspr1 <- NULL
       ArtikelANOVA1 <- NULL
       if (ANOVAGeschlecht=="m") {
@@ -617,7 +648,7 @@ server <- function(input, output, session) {
           ArtikelANOVA2 = "einem"
           Auspr2 = "unterschiedlichen"
         }
-      
+        
         ANOVA2Conn <- kontext$ANOVA2_Conn
         ANOVA2Conn = as.data.frame(ANOVA2Conn)
         ANOVA2Conn = ANOVA2Conn[!(is.na(ANOVA2Conn))]
@@ -637,8 +668,8 @@ server <- function(input, output, session) {
   }
   
   newScaleInfo <- function() {
-
-    if (currentTest() == "t-Test" | currentTest() == "Paired t-Test" | currentTest() == "t-Test (GPT)") {
+    
+    if (currentTest() == "t-Test" | currentTest() == "Paired t-Test") {
       lickert1DF[1,"Variable"] = AV()
       variablen <- values$variablen
       einheitAV = variablen[variablen$Variable_AV == AV(),"Einheit_AV"]
@@ -688,89 +719,10 @@ server <- function(input, output, session) {
     } else if (currentTest() == "Chi-Quadrat"){ 
       shinyjs::hide("scaleTableID")
       shinyjs::hide("scaleTextID")
-      }
-      
-  }
-
-  
-  ask_chatgpt <- function(prompt) {
-    api_key <- "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"
-    
-    response <- POST(
-      url = "https://api.openai.com/v1/chat/completions", 
-      add_headers(Authorization = paste("Bearer", api_key)),
-      content_type_json(),
-      encode = "json",
-      body = list(
-        model = "gpt-3.5-turbo",
-        messages = list(list(
-          role = "user", 
-          content = prompt
-        ))
-      )
-    )
-    str_trim(content(response)$choices[[1]]$message$content)
-  }
-  
-  
-  doTtestGPT <- function() { 
-
-    
-    if (t_testCaseGPT()==1) {
-      data1 = c(89, 29, 65, 41, 58, 90, 88, 43, 8, 82, 47, 11, 9, 33, 59, 32, 9, 38, 73, 76, 94, 52, 72, 77, 16, 43)
-      data2 = c(10, 63, 91, 32, 87, 52, 27, 26, 74, 57, 94, 63, 12, 77, 46, 15, 37, 36, 36, 56, 70, 71, 13, 68, 66, 15)
-      UV("ADHS")
-    } else if (t_testCaseGPT()==2) {
-      data1 = c(42,39,13,52,39,82,40,11,39,83,32,95,76,12,22,48,12,5,8,65,63,26,70,54,46,25,92,63,17,39,63,86,62,30,62,67,66,31,20,66,72,66,23,78,56,34,29,33,71,85,71,51,50,77,51,54,71,89,65,83,83,28,62,92)
-      data2 = c(15,49,53,15,9,77,54,64,60,60,27,59,49,32,18,14,34,46,24,52,12,24,37,80,39,14,54,49,18,31,82,36,35,79,43,42,30,46,24,54,18,19,24,46,22,26,43,29,51,31,14,52,22,30,65,7,55,25,36,35,73,34,5,58)
-      UV("Dyslexie")
-    } else if (t_testCaseGPT()==3) {
-      data1 = c(86,64,60,61,57,60,60,72,56,44,69,65,71,74,79,64,63,70,74,62,65,59,48,66,71,44,44,46,63,67,84,63,47,39,71,58,56,61,85,61,71,61,52,51,67,67,64,68,73,57,63,52,76,86,62,55,68,47,34,69,68,56,48,61,73,60,40,52,49,62)
-      data2 = c(75,68,66,78,59,44,63,79,69,70,51,70,75,69,68,79,42,75,66,74,68,56,61,71,54,44,66,59,75,60,46,59,72,60,68,67,61,79,59,84,64,74,90,64,69,61,78,61,59,54,39,72,72,76,74,85,79,56,59,60,54,73,62,73,80,52,66,69,55,61)
-      UV("vegane Ernährung")
-    }
-
-    groupname1 = paste(c(UV(),": ","ja"), collapse = "")
-
-    groupname2 = paste(c(UV(),": ","nein"), collapse = "")
-
-    
-    df1 <- data.frame("x" = data1, "Gruppe" = groupname1)
-    df2 <- data.frame("x" = data2, "Gruppe" = groupname2)
-    completeData <- rbind(df1, df2)
-    
-    t_test_Temp <- jmv::ttestIS(vars = x, group = Gruppe, data = completeData, norm = TRUE, eqv = TRUE, desc = TRUE, mann = TRUE, effectSize = TRUE)
-    
-    norm <- t_test_Temp$assum$norm$asDF
-    eqv <- t_test_Temp$assum$eqv$asDF
-    pNorm <- norm[1,"p"]
-    pEqv <- eqv[1,"p"]
-    
-    values$doU_test <- FALSE
-    doStudents <- TRUE
-    values$showU_testSol = FALSE
-    if (input$checkPrereq==TRUE) {
-      values$prereqChecked <- TRUE
-      if (pNorm > 0.05 && pEqv > 0.05) {
-        values$showU_testSol = FALSE
-      } else {
-        values$showU_testSol = TRUE
-      }
-      values$doU_test = TRUE
-      doStudents = TRUE
-    } else {
-      values$prereqChecked <- FALSE
     }
     
-    t_test <- jmv::ttestIS(vars = x, group = Gruppe, data = completeData, norm = input$checkPrereq, eqv = input$checkPrereq, desc = TRUE, students = doStudents, mann = values$doU_test, effectSize = TRUE)#students = doStudents, mann = values$doU_test
-    t_test(t_test)
-    
-    # answer <- ask_chatgpt("What function makes a histogram in R?")
-    
-    return(t_test)
-    
   }
-    
+  
   doChiSquared <- function() { 
     set.seed(NULL)  
     df <- NULL
@@ -791,7 +743,7 @@ server <- function(input, output, session) {
     
     a <- rep(data_a, 50)
     b <- rep(data_b, 50)
-
+    
     pr1 <- NULL
     pr2 <- NULL
     equalProb <- wakefield::r_sample_logical(1, prob = c(0.7, 0.3), name = "Logical") 
@@ -806,7 +758,7 @@ server <- function(input, output, session) {
       
       r11 <- runif(1, min = 0.1, max = 0.9)
       r22 <- 1-r11
-
+      
       if(randomswitch==TRUE){
         pr1 <- c(r1, r2) 
         pr2 <- c(r11, r22) 
@@ -826,7 +778,7 @@ server <- function(input, output, session) {
     colnames(df2) <- c("Geschlecht",Merkmal)
     
     df3 <- data.frame(rbind(df1, df2))
-
+    
     chiSqTest <- jmv::contTables(
       formula = as.formula(paste("~ ",Merkmal,":Geschlecht")),
       data = df3,
@@ -835,10 +787,10 @@ server <- function(input, output, session) {
       exp = TRUE)
     
     chiSq_test(chiSqTest)
-
+    
     return(chiSqTest)
     
-    }
+  }
   
   doANOVA <- function() {
     shinyjs::hide("scaleTableID")
@@ -852,7 +804,7 @@ server <- function(input, output, session) {
     if (sum(!is.na(AValternative))==1) {
       AV = as.character(AValternative[1, 1])
     }
-
+    
     
     alpha = 0 
     beta1 = runif(1, -1, 0.4)
@@ -914,7 +866,7 @@ server <- function(input, output, session) {
     
     return(anova)
   }
-
+  
   doLogRegression <- function() {
     shinyjs::hide("scaleTableID")
     shinyjs::hide("scaleTextID")
@@ -932,12 +884,12 @@ server <- function(input, output, session) {
     v2 = uvDF[2,"Variable"]
     mu.1 <- NULL
     mu.1 <- rep(0,n_uv)
-
+    
     
     n <- 500
     
     var <- 1.7
-    coeff <- runif(n = 1, min = 0.1, max = 0.95) 
+    coeff <- runif(n = 1, min = 0.1, max = 0.95) # 0.25
     data <- NULL
     sigma.1 <- NULL
     blocks <- NULL
@@ -1034,7 +986,7 @@ server <- function(input, output, session) {
     n_uv <- nrow(uvDF())
     uvDF <- uvDF()
     set.seed(NULL)  
-    isCorr <- wakefield::r_sample_logical(1, prob = c(0.3, 0.7), name = "Logical") #Wahrscheinlichkeit: 70%
+    isCorr <- wakefield::r_sample_logical(1, prob = c(0.3, 0.7), name = "Logical") #zweite is ja
     
     df <- NULL
     random_data1 <- NULL
@@ -1043,7 +995,7 @@ server <- function(input, output, session) {
     random_data4 <- NULL
     
     if (isCorr) {
-      collTrue <- wakefield::r_sample_logical(1, prob = c(0.3, 0.7), name = "Logical")
+      collTrue <- wakefield::r_sample_logical(1, prob = c(0.3, 0.7), name = "Logical") #zweite is ja
       if (n_uv==2) {
         set.seed(NULL)
         if (collTrue) {
@@ -1136,7 +1088,7 @@ server <- function(input, output, session) {
       }
       
     } else {
-
+      
       random_data1 <- runif(n = 100, min = -2, max = 2)
       random_data2 <- runif(n = 100, min = -2, max = 2)
       if (n_uv==3) {
@@ -1155,7 +1107,7 @@ server <- function(input, output, session) {
     weight3 <- NULL
     weight4 <- NULL
     paste(c(UV(),": ","ja"), collapse = "")
-
+    
     v1 = uvDF[1,"Variable"]
     v2 = uvDF[2,"Variable"]
     Y = AV()
@@ -1191,8 +1143,8 @@ server <- function(input, output, session) {
       df <- as.data.frame(df)
       colnames(df) <- c(v1, v2, v3, v4, Y)
     }
-
-
+    
+    
     set.seed(NULL) 
     if (input$checkPrereq) {
       values$prereqChecked <- TRUE
@@ -1200,7 +1152,7 @@ server <- function(input, output, session) {
       values$prereqChecked <- FALSE
     }
     
-
+    
     
     reg_test <- jmv::linReg(
       data = df,
@@ -1214,12 +1166,12 @@ server <- function(input, output, session) {
       norm = TRUE)
     
     reg_test(reg_test)
-
+    
     numberOfResPlots <- length(reg_test$models[[1]]$assump$resPlots)
     if (input$checkPrereq) {
       shinyjs::show("plot1ID")
     }
-
+    
     return(reg_test)
   }
   
@@ -1381,7 +1333,7 @@ server <- function(input, output, session) {
       sd1Min = sd1Max/4
       
     }
-
+    
     
     sd1Min = round(sd1Min, digits = 0)
     sd1Max = round(sd1Max, digits = 0)
@@ -1419,16 +1371,12 @@ server <- function(input, output, session) {
     #Daten (Normalverteilung)
     data1 = truncnorm::rtruncnorm(n, a=data1Min, b=data1Max, mean = mean1, sd = sd1)
     data1 = round(data1, digits = 0)
-
-    
     data2 = truncnorm::rtruncnorm(n, a=data2Min, b=data2Max, mean = mean2, sd = sd2)
     data2 = round(data2, digits = 0)
-
+    
     
     groupname1 = paste(c(UV(),": ","ja"), collapse = "")
-
     groupname2 = paste(c(UV(),": ","nein"), collapse = "")
-
     
     df1 <- data.frame("x" = data1, "Gruppe" = groupname1)
     df2 <- data.frame("x" = data2, "Gruppe" = groupname2)
@@ -1440,7 +1388,7 @@ server <- function(input, output, session) {
     eqv <- t_test_Temp$assum$eqv$asDF
     pNorm <- norm[1,"p"]
     pEqv <- eqv[1,"p"]
-
+    
     values$doU_test <- FALSE
     doStudents <- TRUE
     values$showU_testSol = FALSE
@@ -1448,8 +1396,12 @@ server <- function(input, output, session) {
       values$prereqChecked <- TRUE
       if (pNorm > 0.05 && pEqv > 0.05) {
         values$showU_testSol = FALSE
+        # values$doU_test = FALSE
+        # doStudents = TRUE
       } else {
         values$showU_testSol = TRUE
+        # values$doU_test = TRUE
+        # doStudents = FALSE
       }
       values$doU_test = TRUE
       doStudents = TRUE
@@ -1460,14 +1412,14 @@ server <- function(input, output, session) {
     t_test <- jmv::ttestIS(vars = x, group = Gruppe, data = completeData, norm = input$checkPrereq, eqv = input$checkPrereq, desc = TRUE, students = doStudents, mann = values$doU_test, effectSize = TRUE)#students = doStudents, mann = values$doU_test
     t_test(t_test)
     
-
-
+    
+    
     return(t_test)
   }
   
   doPairedTtest <- function() {
- #    "Paired t-test can be used only when the difference d
- # is normally distributed. This can be checked using Shapiro-Wilk test."
+    #    "Paired t-test can be used only when the difference d
+    # is normally distributed. This can be checked using Shapiro-Wilk test."
     
     set.seed(NULL)
     
@@ -1478,7 +1430,7 @@ server <- function(input, output, session) {
     minAV = as.integer(minAV[1, 1])
     maxAV = variablen[variablen$Variable_AV == AV(),"Max_AV"]
     maxAV = as.integer(maxAV[1, 1])
-
+    
     meanMin = NULL
     meanMax = NULL
     data1Min = NULL
@@ -1487,7 +1439,7 @@ server <- function(input, output, session) {
     data2Max = NULL
     sd1Min = NULL
     sd1Max = NULL
-
+    
     #AV Skalierungen
     prozent  = "% richtige Ergebnisse im Test"
     minuten = "Minuten am Stück"
@@ -1498,7 +1450,7 @@ server <- function(input, output, session) {
     anzahl = "Anzahl"
     karrierestufe = "Karrierestufe[Tabelle]"
     bildungsabschluss = "Bildungsabschluss[Tabelle]"
-
+    
     if (einheitAV == prozent) {
       meanMin = 30
       meanMax = 70
@@ -1556,15 +1508,15 @@ server <- function(input, output, session) {
       data1Min = 5
       data1Max = mean1*3
     }
-
-
+    
+    
     #Gleicheit der Varianzen mit 70% Wahrscheinlichkeit
     homovar <- wakefield::r_sample_logical(1, prob = c(0.3, 0.7), name = "Logical")
-
+    
     #Stichprobengröße
     n = runif(n = 1, min = 20, max = 80) #runif: gleichverteilte Zufallszahlen
     n = round(n, digits = 0)
-
+    
     #Standardabweichung Data 1
     if (einheitAV == prozent ) {
       sd1Max = data1Max-mean1
@@ -1575,20 +1527,20 @@ server <- function(input, output, session) {
     } else {
       sd1Max = data1Max-mean1
       sd1Min = sd1Max/4
-
+      
     }
-
-
+    
+    
     sd1Min = round(sd1Min, digits = 0)
     sd1Max = round(sd1Max, digits = 0)
     sd1 = runif(n = 1, min = sd1Min, max = sd1Max)
     sd1 = round(sd1, digits = 0)
-
+    
     #Mittelwert Data 2
     diffToMean1 <- runif(n = 1, min = 0.5*-sd1, max = 0.5*sd1)
     mean2 = mean1 + diffToMean1
     mean2 = round(mean2, digits = 0)
-
+    
     if (einheitAV == prozent) {
       data2Min = 5
       data2Max = maxAV
@@ -1598,9 +1550,9 @@ server <- function(input, output, session) {
     } else if (einheitAV %in% c(euroProJahr,lickert1,schulnoten,karrierestufe,bildungsabschluss,anzahl)) {
       data2Min = minAV
       data2Max = maxAV
-
+      
     }
-
+    
     #Standardabweichung Data 2
     sd2 <- NULL
     if (homovar) {
@@ -1611,7 +1563,7 @@ server <- function(input, output, session) {
       sd2 = runif(n = 1, min = sd2Min, max = sd2Max)
       sd2 = round(sd2, digits = 0)
     }
-
+    
     #Daten (Normalverteilung)
     data1 = truncnorm::rtruncnorm(n, a=data1Min, b=data1Max, mean = mean1, sd = sd1)
     data1 = round(data1, digits = 0)
@@ -1621,7 +1573,7 @@ server <- function(input, output, session) {
     
     data <- data.frame(data1, data2)
     colnames(data) <- c("Prä","Post")
- 
+    
     values$prereqChecked <- FALSE
     if (input$checkPrereq) {
       values$prereqChecked <- TRUE
@@ -1640,11 +1592,11 @@ server <- function(input, output, session) {
       desc = TRUE,
       norm = values$prereqChecked,
       wilcoxon = values$doWilcoxon)
-
+    
     norm <- paired_t_test_Temp$norm$asDF
     pNorm <- norm[1,"p"]
-
-
+    
+    
     values$doWilcoxon <- FALSE
     values$showWilcoxonSol <- FALSE
     if (input$checkPrereq==TRUE) {
@@ -1658,7 +1610,7 @@ server <- function(input, output, session) {
     } else {
       values$prereqChecked <- FALSE
     }
-
+    
     paired_t_test <-jmv::ttestPS(
       data = data,
       pairs = list(
@@ -1670,9 +1622,9 @@ server <- function(input, output, session) {
       desc = TRUE,
       norm = values$prereqChecked,
       wilcoxon = values$doWilcoxon)
-
+    
     paired_t_test(paired_t_test)
-
+    
     return(paired_t_test)
   }
   
@@ -1715,7 +1667,7 @@ server <- function(input, output, session) {
       d = abs(ttest[1,"es[stud]"])
     }
     
-
+    
     dText <- NULL
     if (d<0.2) {
       dText = "vernachlässigbaren"
@@ -1816,7 +1768,7 @@ server <- function(input, output, session) {
     sdPre = sprintf("%.2f", round(desc[1,"sd"],2)) 
     meanPost = sprintf("%.2f", round(desc[2,"m"],2))
     sdPost = sprintf("%.2f", round(desc[2,"sd"],2)) 
-
+    
     solutionText <- NULL
     
     gruppePre <- paste(c("der alten Erhebung (Prä; <i>M</i> = ",meanPre,"; <i>SD</i> = ",sdPre,")"), collapse = "")
@@ -1828,7 +1780,7 @@ server <- function(input, output, session) {
       } else if (meanPost>meanPre){
         solutionText1 = paste(c("Entgegen der Hypothese wurde in ", gruppePost," ein höherer Mittelwert beobachtet als in ", gruppePre,"."), collapse = "")
       }
-
+      
     } else if(auspr2PosNeg() == "positiv") {
       if (meanPost<meanPre) {
         solutionText1 = paste(c("Entsprechend der Hypothese wurde in ", gruppePre," ein höherer Mittelwert beobachtet als in ", gruppePost,"."), collapse = "")
@@ -1836,14 +1788,14 @@ server <- function(input, output, session) {
         solutionText1 = paste(c("Entgegen der Hypothese wurde in ", gruppePre," ein niedrigerer Mittelwert beobachtet als in ", gruppePost,"."), collapse = "")
       }
     }
-
+    
     pTtest = NULL
     if (values$showWilcoxonSol==TRUE) {
       pTtest = pairedttest[1,"p[wilc]"] 
     } else {
       pTtest = pairedttest[1,"p[stud]"] 
     }
-  
+    
     pTtestText <- NULL
     if (pTtest<0.05) {
       pTtestText = "konnte inferenzstatistisch abgesichert"
@@ -1868,10 +1820,10 @@ server <- function(input, output, session) {
     } else {
       d = abs(pairedttest[1,"es[stud]"])
     }
-
+    
     effectSize <- NULL
     
-    if (values$showWilcoxonSol==TRUE) {
+    if (values$showWilcoxonSol==TRUE) { # 0,2; 0,4; 0,6
       if (d<0.2) {
         effectSize = "vernachlässigbaren"
       } else if((d>=0.2)&(d<0.4)) {
@@ -1897,13 +1849,13 @@ server <- function(input, output, session) {
     solutionText3 <- NULL
     if (values$showWilcoxonSol==TRUE) {
       solutionText3 <- paste(c("(<i>W</i> = ",round(pairedttest[1,"stat[wilc]"], digits = 2),"; <i>p</i> ",pTtestApa,"; <i>r</i> = ",round(pairedttest[1,"es[wilc]"], digits = 3),"). Hierbei handelt es sich um einen ",effectSize," Effekt."), collapse = "")
-
-
+      
+      
     } else {
       solutionText3 <- paste(c("(<i>t</i>(",pairedttest[1,"df[stud]"],") = ",round(pairedttest[1,"stat[stud]"], digits = 2),"; <i>p</i> ",pTtestApa,"; <i>d</i> = ",round(pairedttest[1,"es[stud]"], digits = 3),"). Hierbei handelt es sich um einen ",effectSize," Effekt."), collapse = "") 
       
     }
-
+    
     
     prereqText1 <- NULL
     if (values$prereqChecked) {
@@ -1935,7 +1887,7 @@ server <- function(input, output, session) {
         prereqText1 = paste(c("<br>Die Differenz dieser Daten war allerdings nicht normalverteilt (<i>W</i> = ",wNormRounded,"; <i>p</i> ",pNormApa,"). Deshalb wurde ein Wilcoxon Test berechnet."), collapse = "")
       }
     }
-
+    
     if (values$prereqChecked) {
       solutionText <- paste(c(solutionText1,prereqText1,solutionText2,solutionText3), collapse = "")
     } else {
@@ -1981,7 +1933,7 @@ server <- function(input, output, session) {
       pApa = sub(".", "", as.character(pPrint))
       pApa = paste(c("= ",pApa), collapse = "")     
     }
-
+    
     if(corText!="kein") {
       posOrNeg <- NULL
       if (corCoeff>0) {
@@ -1995,7 +1947,7 @@ server <- function(input, output, session) {
     }
     solutionText2 = paste(c("<br>Das Ergebnis ist statistisch ",pText," (<i>p</i> ",pApa,")."), collapse = "")
     solutionText = paste(c(solutionText1, solutionText2), collapse = " ")     
-
+    
     return(solutionText)
   }
   
@@ -2030,10 +1982,10 @@ server <- function(input, output, session) {
         betaVal <- as.numeric(coefDF[index,"stdEst"])
         beta <- round(betaVal, digits = 2)
         sigText <- paste(c(sigText, "- ", coefDF[index,"term"]," (β = ",beta,"; <i>p</i> ",pApa,")<br>"), collapse = "")
-
+        
       }
     }
-
+    
     collDF <- reg_test$models[[1]]$assump$collin$asDF
     VIF <- NULL
     for(i in 1:nrow(collDF)) {
@@ -2042,14 +1994,14 @@ server <- function(input, output, session) {
         VIF <- c(VIF, i)
       }
     }
-
+    
     multiVars <- length(VIF)
     
     percentage <- helperGetPercentage(reg_test$modelFit$asDF[1,"r2"])
-
+    
     solution <- NULL
     solutionText1 <- paste(c("Die Prädiktoren erklären ", percentage, " der Varianz. "), collapse = "")     
-
+    
     if (length(sigVars)==0) {
       solutionText1 <- paste(c(solutionText1, "Kein Prädiktor trägt signifikant zur Vorhersage bei. "), collapse = "")
     } else if (length(sigVars)==1) {
@@ -2059,7 +2011,7 @@ server <- function(input, output, session) {
     }
     
     if (values$prereqChecked==TRUE) {
-
+      
       if (multiVars==0) {
         solutionText2 <- " Es liegt keine Multikollinearität vor. "
       } else if (multiVars==1) {
@@ -2074,8 +2026,8 @@ server <- function(input, output, session) {
       
       solutionText3 <- "Es liegt keine Heteroskedastizität vor."
       solution <- paste(c(solutionText1, solutionText2, solutionText3), collapse = "")     
-
-
+      
+      
     } else {
       solution <- solutionText1
     }
@@ -2086,7 +2038,7 @@ server <- function(input, output, session) {
   getLogRegSolution <- function() {
     logReg_test <- logReg_test()
     coefDF <- logReg_test$models[[1]]$coef$asDF
-
+    
     sigVars <- NULL
     for(i in 1:nrow(coefDF)) {
       p <- as.numeric(coefDF[i,"p"])
@@ -2122,7 +2074,7 @@ server <- function(input, output, session) {
         sigText <- paste(c(sigText, "- ", coefDF[index,"term"]," (b = ",beta,"; <i>p</i> ",pApa,"; OR = ",odds,")<br>"), collapse = "")
       }
     }
-
+    
     r2mfRaw <- as.numeric(logReg_test$modelFit$asDF[1,"r2mf"])
     r2mfRounded = sprintf("%.2f", round(r2mfRaw,2))
     r2mfSplit <- strsplit(as.character(r2mfRounded), "\\.")
@@ -2149,14 +2101,14 @@ server <- function(input, output, session) {
     R2 <- "R\U00B2-McF"
     solutionText1 <- paste(c("Das Modell klassifizierte ",modelfitString, " hinsichtlich des ",AValternative," (",R2,"=  .", r2mfDec,")"), collapse = "")     
     predDF <- logReg_test$models[[1]]$pred$measures$asDF
-
+    
     accuracy <- helperGetPercentage(predDF[1,"accuracy"])
     spec <- helperGetPercentage(predDF[1,"spec"])
     sens <- helperGetPercentage(predDF[1,"sens"])
     auc <- helperGetPercentage(predDF[1,"auc"])
     solutionText1 <- paste(c(solutionText1,", wobei insgesamt ", accuracy, " der Fälle korrekt zugeordnet wurden (Spezifität = ",spec,"; Sensitivität = ",sens,"; AUC = ",auc,"). <br>"), collapse = "")     
-
-
+    
+    
     if (length(sigVars)==0) {
       solutionText1 <- paste(c(solutionText1, "Kein Prädiktor trägt signifikant zur Vorhersage bei. "), collapse = "")
     } else if (length(sigVars)==1) {
@@ -2166,7 +2118,7 @@ server <- function(input, output, session) {
     } 
     
     solution <- solutionText1
-
+    
     return(solution)
   }
   
@@ -2195,7 +2147,7 @@ server <- function(input, output, session) {
       fValue <- as.numeric(anova$main$asDF[1,"F"])
     }
     fPrint = sprintf("%.2f", round(fValue,2))
- 
+    
     pValue <- NULL
     if (isTwoFac()) {
       pValue <- as.numeric(anova$main$asDF[3,"p"])
@@ -2283,10 +2235,10 @@ server <- function(input, output, session) {
     } else if (geschlechtAV=="n") {
       AVString <- paste(c("das ",AV), collapse = "")
     }
- 
+    
     pNorm <- anova$assump$norm$asDF[1,"p[sw]"]
     pEqv <- anova$assump$homo$asDF[1,"p"]
-      
+    
     if (!(is.na(pNorm))) {
       pNormRounded = round(pNorm, digits = 3)
       pNormPrint = sprintf("%.3f", round(pNorm,3))
@@ -2322,12 +2274,12 @@ server <- function(input, output, session) {
         prereqText2 = paste(c("Die Voraussetzung der Varianzhomogenität ist laut Levene-Test verletzt (<i>p</i> ",pEqvApa,")."), collapse = "")
       }
     }
-  
+    
     solution <- NULL
     if (isTwoFac()) {
       ANOVAGeschlecht2 <- ANOVAGruppen[ANOVAGruppen$Name == ANOVAGruppe2(),"Geschlecht"]
       ANOVAGeschlecht2 = as.character(ANOVAGeschlecht2[1, 1])
-
+      
       ANOVAGruppeString2 <- NULL
       if (ANOVAGeschlecht2=="m") {
         ANOVAGruppeString2 <- paste(c("dem ",ANOVAGruppe2()), collapse = "")
@@ -2336,7 +2288,7 @@ server <- function(input, output, session) {
       } else if (ANOVAGeschlecht2=="n") {
         ANOVAGruppeString2 <- paste(c("dem ",ANOVAGruppe2()), collapse = "")
       }
-
+      
       solutionText1 <- paste(c("Die Varianzanalyse ergab ",pText," signifikanten Effekt ",ANOVAGruppeString," in Kombination mit ", ANOVAGruppeString2 ," auf ",AVString," (<i>F</i>(",dfValue,",",dfResiduals,") = ",fPrint,"; <i>p</i> ",pApa,")."), collapse = "")
       if(pValue<=0.05) {
         solution <- paste(c(solutionText1," Die Gesamtunterschiedlichkeit aller Messwerte ist zu ",percentString," auf ",ArtikelANOVA," ",Auspr1," ",ANOVAGruppe()," in Kombination mit ",ANOVAGruppeString2," zur\u00FCckzuf\u00FChren (η<sup>2</sup> = ",round(anova$main$asDF[3,"etaSq"], digits = 2),")."), collapse = "")
@@ -2353,7 +2305,7 @@ server <- function(input, output, session) {
       }
     }
     
-
+    
     if (values$prereqChecked) {
       solution <- paste(c(solution,prereqText1,prereqText2), collapse = " ")
     }
@@ -2374,14 +2326,14 @@ server <- function(input, output, session) {
     
     
     UV <- paste0("\"",UV(),"\"")
-
+    
     posRow <- filter(chiSq_test$freqs$asDF, rownames(chiSq_test$freqs$asDF) == UV)
     posFrauen <- posRow[,"1[count]"]
     posMänner <- posRow[,"2[count]"]
-
+    
     percentageF <- helperGetPercentage(posRow[,"1[pcRow]"])
     percentageM <- helperGetPercentage(posRow[,"2[pcRow]"])
-
+    
     
     solTextProzente <- NULL
     if (posFrauen > posMänner) {
@@ -2391,7 +2343,7 @@ server <- function(input, output, session) {
     } else if (posFrauen == posMänner) {
       solTextProzente <- paste(c("",percentageM," der Männer sowie ",percentageF," Frauen leiden an ",UV(),". "), collapse = "")  
     }
-
+    
     
     if (chiSq_val > 3.84) {
       solTextUnabhängig <- "Die Merkmale sind nicht unabhängig voneinander."
@@ -2418,11 +2370,6 @@ server <- function(input, output, session) {
     return(solution)
   }
   
-  getTtestGPTSolution <- function() { 
-    
-    return("GPT Solution")
-  }
-  
   newTask <- eventReactive(input$newTaskButton, {
     values$users_data$NewTaskCount = values$users_data$NewTaskCount + 1
     if (input$selectTest=="t-Test") {
@@ -2439,10 +2386,8 @@ server <- function(input, output, session) {
       currentTest("ANOVA")
     } else if (input$selectTest=="Chi-Quadrat"){
       currentTest("Chi-Quadrat")
-    } else if (input$selectTest=="t-Test (GPT)"){
-      currentTest("t-Test (GPT)")
     }
-
+    
     
     if (currentTest() == "t-Test"){
       newTaskText() 
@@ -2452,7 +2397,7 @@ server <- function(input, output, session) {
       tryCatch(
         expr = {
           testResult <- doTtest()
-          },
+        },
         error = function(err){
           click("newTaskButton")
         }
@@ -2462,14 +2407,14 @@ server <- function(input, output, session) {
       newScaleInfo()
       shinyjs::enable("checkPrereq")
       testResult <- NULL
-      tryCatch(
-        expr = {
-          testResult <- doPairedTtest()
-      },
-      error = function(err){
-        click("newTaskButton")
-      }
-      )
+      # tryCatch(
+      #   expr = {
+      testResult <- doPairedTtest()
+      # },
+      # error = function(err){
+      #   click("newTaskButton")
+      # }
+      # )
     } else if(currentTest() == "Korrelation"){
       newTaskText() 
       testResult <- NULL
@@ -2529,33 +2474,12 @@ server <- function(input, output, session) {
           click("newTaskButton")
         }
       )
-    } else if (currentTest() == "t-Test (GPT)"){
-      x <- c(1,2,3)
-      t_testCaseGPT(sample(x,1))
-
-      
-      if (t_testCaseGPT()==1) {
-        AV("Rechenleistung")
-      } else if (t_testCaseGPT()==2) {
-        AV("Ergebnissen in Leistungstests")
-      } else if (t_testCaseGPT()==3) {
-        AV("Rechenleistung")
-      }
-      print(t_testCaseGPT())
-      newTaskText() 
-      shinyjs::enable("checkPrereq")
-      newScaleInfo()
-      testResult <- NULL
-
-      testResult <- doTtestGPT()
-          
-          
     }
     return(testResult)
   })
   
   newTaskText <- eventReactive(input$newTaskButton, {
-
+    
     if (currentTest() == "t-Test"){
       taskText <- getTaskText()
     } else if (currentTest() == "Paired t-Test"){
@@ -2570,41 +2494,66 @@ server <- function(input, output, session) {
       taskText <- getTaskText()
     } else if (currentTest() == "Chi-Quadrat"){
       taskText <- getTaskText()
-    } else if (currentTest() == "t-Test (GPT)"){
-      if (t_testCaseGPT()==1) {
-        taskText <- "Sie möchten besser verstehen, ob ADHS auch eine schlechtere Rechenleistung verursacht. Sie beschließen, Ihre Schüler in dieser Hinsicht zu beobachten und finden folgende Ergebnisse:"
-      } else if (t_testCaseGPT()==2) {
-        taskText <- "Sie überlegen, ob Dyslexie zu niedrigeren Ergebnissen in Leistungstests führt. Das Internet schlägt Ihnen folgende Ergebnisse vor:"
-      } else if (t_testCaseGPT()==3) {
-        taskText <- "Sie überlegen, ob eine vegane Ernährung mit einer schlechteren Rechenleistung zusammenhängt. Das Internet schlägt Ihnen folgende Ergebnisse vor:"
-      }
-
     }
     return(taskText)
   })
   
   showSolutionText <- eventReactive(input$showSolutionButton, {
     shinyjs::show("textSolution")
-    if (currentTest() == "t-Test"){
-      solutionText <- getTtestSolution()
-    } else if (currentTest() == "Paired t-Test"){
-      solutionText <- getPairedTtestSolution()
-    } else if (currentTest() == "Korrelation"){
-      solutionText <- getCorrSolution()
-    } else if (currentTest() == "Regression"){
-      solutionText <- getRegSolution()
-    } else if (currentTest() == "ANOVA"){
-      solutionText <- getANOVASolution()
-    } else if (currentTest() == "log. Regression"){
-      solutionText <- getLogRegSolution()
-    } else if (currentTest() == "Chi-Quadrat"){
-      solutionText <- getChiSquaredSolution()
-    } else if (currentTest() == "t-Test (GPT)"){
-      solutionText <- getTtestGPTSolution()
-    } 
-
     
-    return(solutionText)
+    # Determine the solution text based on the current test
+    if (currentTest() == "t-Test") {
+      solutionText <- getTtestSolution()
+    } else if (currentTest() == "Paired t-Test") {
+      solutionText <- getPairedTtestSolution()
+    } else if (currentTest() == "Korrelation") {
+      solutionText <- getCorrSolution()
+    } else if (currentTest() == "Regression") {
+      solutionText <- getRegSolution()
+    } else if (currentTest() == "ANOVA") {
+      solutionText <- getANOVASolution()
+    } else if (currentTest() == "log. Regression") {
+      solutionText <- getLogRegSolution()
+    } else if (currentTest() == "Chi-Quadrat") {
+      solutionText <- getChiSquaredSolution()
+    } 
+    
+    # Check feedback mode
+    if (input$feedbackMode == "dynamic") {
+      # Dynamic feedback: Send to GPT
+      userInput <- input$solutionInput  # Input from user
+      gptPrompt <- paste(
+        "Folgendes ist der Lösungsversuch des Nutzers:\n\n",
+        userInput,
+        "\n\nHier ist die korrekte Lösung:\n\n",
+        solutionText,
+        "\n\nBitte geben Sie Feedback, indem Sie die beiden Lösungen vergleichen, Stärken, Schwächen und Verbesserungspotenziale aufzeigen."
+      )
+      
+      # Replace with OpenAI API or custom HTTP call
+      response <- POST(
+        url = "https://api.openai.com/v1/chat/completions",
+        add_headers(Authorization = paste("Bearer", Sys.getenv("OPENAI_API_KEY"))),
+        content_type_json(),
+        encode = "json",
+        body = list(
+          model = "gpt-4o",
+          messages = list(list(role = "system", content = gptPrompt)),
+          temperature = 0.5  # Adjust as needed
+        )
+      )
+      
+      # Extract and return GPT response
+      
+      feedback_data <- content(response, as = "parsed")
+      gptResponse <- feedback_data$choices[[1]]$message$content
+      print(gptResponse)
+      
+      return(gptResponse)
+    } else {
+      # Static feedback: Return predefined solution text
+      return(solutionText)
+    }
   })
   
   newQuestionText <- eventReactive(input$newTaskButton, {
@@ -2622,8 +2571,6 @@ server <- function(input, output, session) {
       questionText <- getQuestionText()
     } else if(currentTest() == "Chi-Quadrat"){
       questionText <- paste(c("Sind die Merkmale „",UV(),"“ und „Geschlecht“ unabhängig voneinander?"), collapse = "")  
-    } else if(currentTest() == "t-Test (GPT)"){
-      questionText <- getQuestionText()
     } 
     return(questionText)
   })
@@ -2633,7 +2580,7 @@ server <- function(input, output, session) {
   },height = function(){
     dev.size("px")[2]*plotHeightVar},width = function(){
       dev.size("px")[1]*plotWidthVar})
-
+  
   output$tTest <- renderPrint({ 
     testResult <- newTask()
     options(digits=4)
@@ -2675,13 +2622,13 @@ server <- function(input, output, session) {
       shinyjs::show("box3")
       shinyjs::show("textSolution")
     }
-
+    
   })
   
   observeEvent(input$newTaskButton, {
     updateTextAreaInput(session, "solutionInput", value = paste(""))
     if (input$selectTest != "Regression") {
-    shinyjs::hide("plot1ID")
+      shinyjs::hide("plot1ID")
     }
     newTask()
     newQuestionText()
