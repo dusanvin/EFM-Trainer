@@ -1,7 +1,7 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
-[Projektbeschreibung anzeigen](Projektbeschreibung_EFM-Trainer.md)
 ![efm-trainer](https://github.com/user-attachments/assets/7dfa8e48-e4b6-49eb-81d7-2442bc752ea0)
 
+[Zur Projektbeschreibung](Projektbeschreibung_EFM-Trainer.md)
 
 ## Vorbereitung
 Öffne deine R-Konsole oder RStudio und führe aus:
