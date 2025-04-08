@@ -34,3 +34,23 @@
     font-size: 14px;
     font-weight: 700;
 }
+.misc-links {
+    color: #cbcaca !important;
+}
+.misc-links:hover {
+    color: #fff !important;
+}
+.prereqs-digillab .shiny-input-container {
+    padding-top: 0 !important;
+}
+.prereqs-digillab .shiny-input-container .checkbox {
+    margin-top: 0;
+}
+#selectTest-label {
+    margin-bottom: 10px;
+}
+.shiny-input-container:has(> label#selectTest-label) {
+margin-bottom: 10px !important;
+}
+  
+  

@@ -62,9 +62,7 @@ sidebar <- shinydashboard::dashboardSidebar(
     )
   ),
   div(
-    style = "
-    padding-top: 0 !important;
-    ",
+    class="prereqs-digillab",
     checkboxInput(
       inputId = "checkPrereq",
       label = "Voraussetzungen testen",
@@ -113,10 +111,16 @@ sidebar <- shinydashboard::dashboardSidebar(
         text-align: center;
       ",
       # Logo
-      tags$img(
-        src = "logo.png", 
-        height = "60px", 
-        style = "margin-bottom: 10px;"
+      tags$a(
+        href = "https://digillab.uni-augsburg.de",
+        target = "_blank",
+        tags$img(
+          src = "logo.png",
+          height = "60px",
+          style = "
+            margin-left: 15px;
+          "
+        )
       ),
       # Links
       tags$div(
@@ -126,9 +130,19 @@ sidebar <- shinydashboard::dashboardSidebar(
           justify-content: center; 
           gap: 10px;"
         ,
-        tags$a(href = "datenschutz.html", "Datenschutz", target = "_blank"),
+        tags$a(
+          class="misc-links",
+          href = "https://www.uni-augsburg.de/de/impressum/datenschutz/",
+          "Datenschutz",
+          target = "_blank"
+        ),
         tags$span("|"),
-        tags$a(href = "impressum.html", "Impressum", target = "_blank")
+        tags$a(
+          class="misc-links",
+          href = "https://www.uni-augsburg.de/de/impressum/",
+          "Impressum",
+          target = "_blank"
+        )
       )
     )
   )
