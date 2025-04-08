@@ -1,3 +1,4 @@
+# Import
 library(shiny)
 library(shinydashboard)
 library(shinyBS)
@@ -17,30 +18,60 @@ library(httr)
 library(markdown)
 library(dotenv)
 
+# Anbindung
 dotenv::load_dot_env()
-
 Sys.setenv(OPENAI_API_KEY = Sys.getenv("OPENAI_API_KEY"))
 gs4_auth(path = Sys.getenv("GSHEET_PATH"))
 gsheetID <- Sys.getenv("GSHEET_ID")
 
-
+# Sidebar
 sidebar <- shinydashboard::dashboardSidebar(
   collapsed = FALSE,
   width = 230,
   tags$p("Testen Sie Ihr Wissen zu empirischen Forschungsmethoden (EFM).",
-         style = "padding: 10px; padding-left:15px; font-size: 90%; margin-bottom: 0; margin-top:10px;"),
-  tags$p("Wählen Sie zwischen der Art des Test und des Feedbacks aus. Vertiefen Sie das Gelernte, indem Sie neue Aufgaben bearbeiten. ",
-         style = "padding-right: 10px; padding-left:15px; font-size: 90%;"),
+    style =
+      "
+      padding: 10px; 
+      padding-left:15px; 
+      font-size: 90%; 
+      margin-bottom: 0; 
+      margin-top:10px;
+      "
+  ),
+  tags$p(
+    "
+      Wählen Sie zwischen der Art des Test und des Feedbacks aus. 
+      Vertiefen Sie das Gelernte, indem Sie neue Aufgaben bearbeiten.
+    "
+    ,
+    style = "
+      padding-right: 10px; 
+      padding-left:15px; 
+      font-size: 90%;"
+  ),
   selectInput(
     "selectTest",
     "Art des Tests",
-    c("t-Test", "Paired t-Test", "Korrelation", "Regression", "log. Regression", "ANOVA", "Chi-Quadrat")
+    c(
+      "t-Test",
+      "Paired t-Test",
+      "Korrelation",
+      "Regression",
+      "log. Regression",
+      "ANOVA", "Chi-Quadrat"
+    )
   ),
   div(
-    style = "padding-top: 0 !important;",
-    checkboxInput(inputId = "checkPrereq", label = "Voraussetzungen testen", value = FALSE, width = NULL)
+    style = "
+    padding-top: 0 !important;
+    ",
+    checkboxInput(
+      inputId = "checkPrereq",
+      label = "Voraussetzungen testen",
+      value = FALSE,
+      width = NULL
+    )
   ),
-  
   # Add toggle for feedback mode
   radioButtons(
     inputId = "feedbackMode",
@@ -50,23 +81,60 @@ sidebar <- shinydashboard::dashboardSidebar(
   ),
 
   tags$div(
-    tags$p("Übung", style = "margin-left: 15px; margin-top: 25px; font-weight: bold;"),
-    tags$p("Wählen Sie eine neue Aufgabe, um Ihr Wissen (erneut) zu testen.", style = "margin-left: 15px; margin-right: 15px; margin-top: 10px; margin-bottom:10px; font-size: 90%;"),
-    shinyBS::bsButton("newTaskButton", label = "Neue Aufgabe", block = FALSE, style = "primary")
+    tags$p(
+      "Übung",
+      style = "
+        margin-left: 15px; 
+        margin-top: 25px; 
+        font-weight: bold;
+      "
+    ),
+    tags$p("
+      Wählen Sie eine neue Aufgabe, um Ihr Wissen (erneut) zu testen.",
+      style = "
+        margin-left: 15px; 
+        margin-right: 15px; 
+        margin-top: 10px; 
+        margin-bottom:10px; 
+        font-size: 90%;
+      "
+    ),
+    shinyBS::bsButton(
+      "newTaskButton",
+      label = "Neue Aufgabe",
+      block = FALSE,
+      style = "primary"
+    )
   )
-
 )
 
+# Body
 body <- shinydashboard::dashboardBody(
-  fluidRow(
-    useShinyjs(),
-    hidden(div(id = "box1", box(width = 12, 
-                                h3("Aufgabe:", style = "margin-top: 0; margin-bottom: 0.5em; font-size: 16px; font-weight: 700;"),
-                                div(style = "margin-bottom: 0.5em;", textOutput("textTask")),
-                                hidden(div(id = "scaleTextID",uiOutput("scaleText"), style = "font-size:100%; margin-bottom: 0.5em;")),
-                                hidden(div(id = "scaleTableID",tableOutput("scaleTable"), style = "font-size:80%")),
-                                verbatimTextOutput("tTest"),
-                                hidden(div(id = "plot1ID",style = "display:inline-block; float:left", plotOutput("plot1", height = "auto", width = "auto"))),
+                                      fluidRow(
+                                        useShinyjs(),
+                                        hidden(
+                                               div(
+                                                   id = "box1",
+                                                   box(width = 12,
+                                                     h3(
+                                                       "Aufgabe:",
+                                                       style = "
+                                                          margin-top: 0; 
+                                                          margin-bottom: 0.5em; 
+                                                          font-size: 16px; 
+                                                          font-weight: 700;
+                                                        "
+                                                     ),
+                                                     div(
+                                                       style = "
+                                                        margin-bottom: 0.5em;
+                                                      ",
+                                                       textOutput("textTask")
+                                                     ),
+          hidden(div(id = "scaleTextID",uiOutput("scaleText"), style = "font-size:100%; margin-bottom: 0.5em;")),
+          hidden(div(id = "scaleTableID",tableOutput("scaleTable"), style = "font-size:80%")),
+          verbatimTextOutput("tTest"),
+          hidden(div(id = "plot1ID",style = "display:inline-block; float:left", plotOutput("plot1", height = "auto", width = "auto"))),
     ))),
     
     hidden(div(id = "box2", box(width = 12, 
