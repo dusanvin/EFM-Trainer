@@ -1,0 +1,13 @@
+.skin-blue .main-header .navbar {
+    background-color: #222d32 !important;
+}
+.skin-blue .main-header .logo {
+    background-color: #222d32;
+}
+.skin-blue .main-header .navbar .sidebar-toggle {
+    color: #cbcaca;
+}
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+    color: #fff;
+    background-color: transparent;
+}
