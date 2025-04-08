@@ -2624,7 +2624,7 @@ server <- function(input, output, session) {
     }
     
   })
-  
+  # Button: Neue Aufgabe
   observeEvent(input$newTaskButton, {
     updateTextAreaInput(session, "solutionInput", value = paste(""))
     if (input$selectTest != "Regression") {
@@ -2638,6 +2638,7 @@ server <- function(input, output, session) {
     shinyjs::show("box2")
     shinyjs::hide("box3")
     shinyjs::hide("textSolution")
+    shinyjs::hide("aboutBox")
   })
   
   observeEvent(input$selectTest, {
@@ -2653,4 +2654,17 @@ server <- function(input, output, session) {
   #   click("newTaskButton")
   #   invalidateLater(100)
   # })
+  observeEvent(input$showAbout, {
+  shinyjs::hide("box1")
+  shinyjs::hide("box2")
+  shinyjs::hide("box3")
+  shinyjs::show("aboutBox")
+})
+observeEvent(input$backButton, {
+  shinyjs::hide("aboutBox")
+  shinyjs::show("box1")
+  shinyjs::show("box2")
+  shinyjs::show("box3")
+})
+
 }
