@@ -142,6 +142,13 @@ sidebar <- shinydashboard::dashboardSidebar(
           href = "https://www.uni-augsburg.de/de/impressum/",
           "Impressum",
           target = "_blank"
+        ),
+        tags$span("|"),
+        tags$a(
+          class="misc-links",
+          href = "https://www.uni-augsburg.de/de/fakultaet/philsoz/fakultat/learning-analytics/news/",
+          "Über",
+          target = "_blank"
         )
       )
     )

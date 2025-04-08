@@ -52,5 +52,12 @@
 .shiny-input-container:has(> label#selectTest-label) {
 margin-bottom: 10px !important;
 }
-  
+.main-header .navbar {
+    min-height: 70px;
+}
+
+.main-sidebar {
+    padding-top:76px;
+}
+
   
