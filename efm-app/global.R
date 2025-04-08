@@ -104,6 +104,32 @@ sidebar <- shinydashboard::dashboardSidebar(
       label = "Neue Aufgabe",
       block = FALSE,
       style = "primary"
+    ),
+    tags$div(
+      style = "
+        position: absolute; 
+        bottom: 20px; 
+        width: 100%;
+        text-align: center;
+      ",
+      # Logo
+      tags$img(
+        src = "logo.png", 
+        height = "60px", 
+        style = "margin-bottom: 10px;"
+      ),
+      # Links
+      tags$div(
+        style = "
+          font-size: 80%; 
+          display: flex; 
+          justify-content: center; 
+          gap: 10px;"
+        ,
+        tags$a(href = "datenschutz.html", "Datenschutz", target = "_blank"),
+        tags$span("|"),
+        tags$a(href = "impressum.html", "Impressum", target = "_blank")
+      )
     )
   )
 )
