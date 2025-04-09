@@ -26,6 +26,7 @@ gsheetID <- Sys.getenv("GSHEET_ID")
 
 # Sidebar
 sidebar <- shinydashboard::dashboardSidebar(
+  useShinyjs(),
   collapsed = FALSE,
   width = 230,
   tags$p("Testen Sie Ihr Wissen zu empirischen Forschungsmethoden (EFM).",
@@ -203,6 +204,7 @@ body <- shinydashboard::dashboardBody(
                                           div(
                                             style = "
                                                   margin-bottom: 0.5em;
+                                                  padding: 1em;
                                                 ",
                                             h3(
                                             "Bericht:", style = "
@@ -216,9 +218,15 @@ body <- shinydashboard::dashboardBody(
                                             hidden(shinyBS::bsButton("showSolutionButton", label = "Lösung anzeigen", block = F, style="success")),
                                           )
                                         ))),
-    hidden(div(id = "box3", box(width = 12, 
-      uiOutput("textSolution")
-    ))),
+                                        hidden(div(id = "box3", box(width = 12, 
+                                          div(
+                                            style = "
+                                                  margin-bottom: 0.5em;
+                                                  padding: 1em 1em 0 1em;
+                                                ",
+                                            uiOutput("textSolution")
+                                          )
+                                        ))),
     hidden(
             div(id = "aboutBox", class = "about-page", style = "max-width: 700px;",
               box(width = 12,
