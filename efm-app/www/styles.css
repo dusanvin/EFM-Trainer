@@ -55,11 +55,17 @@ margin-bottom: 10px !important;
 .main-header .navbar {
     min-height: 70px;
 }
-
 .main-sidebar {
     padding-top:76px;
 }
-
 #solutionInput-label {
     font-weight: 400 !important;
 } 
+.sidebar-link-digillab {
+    color: #89c8ed !important;
+    text-underline-offset: 3px;
+}
+
+.sidebar-link-digillab:hover {
+    text-decoration: underline !important;
+}

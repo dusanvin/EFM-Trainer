@@ -29,7 +29,9 @@ sidebar <- shinydashboard::dashboardSidebar(
   useShinyjs(),
   collapsed = FALSE,
   width = 230,
-  tags$p("Testen Sie Ihr Wissen zu empirischen Forschungsmethoden (EFM).",
+  div(
+    style="margin-bottom: 1em;",
+    tags$p("Testen Sie Ihr Wissen zu empirischen Forschungsmethoden (EFM).",
     style =
       "
       padding: 10px; 
@@ -38,17 +40,29 @@ sidebar <- shinydashboard::dashboardSidebar(
       margin-bottom: 0; 
       margin-top:10px;
       "
-  ),
-  tags$p(
-    "
-      Wählen Sie zwischen der Art des Test und des Feedbacks aus. 
-      Vertiefen Sie das Gelernte, indem Sie neue Aufgaben bearbeiten.
-    "
-    ,
-    style = "
-      padding-right: 10px; 
-      padding-left:15px; 
-      font-size: 90%;"
+    ),
+    tags$p(
+      "
+        Wählen Sie zwischen der Art des Test und des Feedbacks aus. 
+        Vertiefen Sie das Gelernte, indem Sie neue Aufgaben bearbeiten.
+      "
+      ,
+      style = "
+        padding-right: 10px; 
+        padding-left:15px; 
+        font-size: 90%;"
+    ),
+    tags$a(
+      class="sidebar-link-digillab",
+      style = "
+        padding-right: 10px; 
+        padding-left:15px; 
+        font-size: 90%;
+      ",
+      href = "#",
+      onclick = "Shiny.setInputValue('showHelp', Math.random())",  # Trigger wie bei 'Über'
+      "Wie nutze ich den EFM-Trainer?"
+    )
   ),
   selectInput(
     "selectTest",
@@ -227,59 +241,92 @@ body <- shinydashboard::dashboardBody(
                                             uiOutput("textSolution")
                                           )
                                         ))),
-    hidden(
-            div(id = "aboutBox", class = "about-page", style = "max-width: 700px;",
-              box(width = 12,
-                div(
-                  style="padding-left: 1em; padding-right: 1em;",
-                  h3("Über"),
-                  p(
-                    class="margin-bottom:0.3em;",
-                    "Der Empirische Forschungsmethoden (EFM)-Trainer ist eine interaktive Applikation (App) zur Vermittlung und Anwendung empirischer Forschungsmethoden. 
-                  Die App integriert statistische Testverfahren mit einer ChatGPT-Schnittstelle für KI-gestütztes Feedback."),
-                  p("Ursprünglich an der Ludiwg-Maximilians-Universität (LMU) von Prof. Dr. Michael Sailer und Prof. Dr. Michael Stadler konzipiert, wurde sie im Rahmen des DigiLLabs an der Universität Augsburg mittels eins Projektantrags vom Lehrstuhl für Learning Analytics and Educational Data Mining weiterentwickelt."),
-                  # tags$hr()
-                ),
-                div(
-                  style="padding-left: 1em; padding-right: 1em; padding-bottom: 1em;",
-                  h3("Kontakt"),
-                  p(
-                    class="margin-bottom:0.3em;",
-                    "Wenden Sie sich bei",
-                    span("inhaltlichen Rückfragen", style = "font-weight: 700;"),
-                    "an:"
-                  ),
-                  tags$a(href = "mailto:michael.sailer@uni-a.de", "Prof. Dr. Michael Sailer"),
-                  p("Lehrstuhl für ",
-                    tags$a(href = "https://www.uni-augsburg.de/de/fakultaet/philsoz/fakultat/learning-analytics/", target = "_blank", "Learning Analytics and Educational Data Mining"),
-                  ),
-                  p(
-                    "Wenden Sie sich bei",
-                    span("technischen Rückfragen", style = "font-weight: 700;"),
-                    "an:"
-                  ),
-                  tags$a(href = "mailto:vincent.dusanek@uni-a.de", "Vincent Dusanek"),
-                  p("",
-                    tags$a(href = "https://digillab.uni-augsburg.de", target = "_blank", "Zentrum für digitales Lehren und Lernen (DigiLLab)"),
-                  ),
-                ),
-                div(
-                  style="padding-left: 1em; padding-right: 1em; padding-bottom: 1em;",
-                  h3(
-                    style="margin-top:0;",
-                    "Lizenz"),
-                  p("Version 1.1: 04:2025"),
-                  p(
-                    class="margin-bottom:0.3em;",
-                    "Der Empirische Forschungsmethoden (EFM)-Trainer ist eine Applikation zur Vermittlung und Anwendung empirischer Forschungsmethoden. Weiterentwickelt von Vincent Dusanek und Norman Szabo für DigiLLab im Rahmen eines Projektantrags des Lehrstuhls für",
-                      tags$a(href = "https://www.uni-augsburg.de/de/fakultaet/philsoz/fakultat/learning-analytics/", target = "_blank", "Learning Analytics and Educational Data Mining"),
-                      "2025,",
-                      tags$a(href = "https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide", target = "_blank", "MIT-Lizenz"),"."
-                  ),
-                  tags$hr(),
-                  actionButton("backButton", "Zurück zur App", icon = icon("arrow-left"))
-                )
-              )
-            )
-          ),
+                                        hidden(
+                                                div(id = "aboutBox", class = "about-page", style = "max-width: 700px;",
+                                                  box(width = 12,
+                                                    div(
+                                                      style="padding-left: 1em; padding-right: 1em;",
+                                                      h3("Über"),
+                                                      p(
+                                                        class="margin-bottom:0.3em;",
+                                                        "Der Empirische Forschungsmethoden (EFM)-Trainer ist eine interaktive Applikation (App) zur Vermittlung und Anwendung empirischer Forschungsmethoden. 
+                                                      Die App integriert statistische Testverfahren mit einer ChatGPT-Schnittstelle für KI-gestütztes Feedback."),
+                                                      p("Ursprünglich an der Ludiwg-Maximilians-Universität (LMU) von Prof. Dr. Michael Sailer und Prof. Dr. Michael Stadler konzipiert, wurde sie im Rahmen des DigiLLabs an der Universität Augsburg mittels eins Projektantrags vom Lehrstuhl für Learning Analytics and Educational Data Mining weiterentwickelt."),
+                                                      # tags$hr()
+                                                    ),
+                                                    div(
+                                                      style="padding-left: 1em; padding-right: 1em; padding-bottom: 1em;",
+                                                      h3("Kontakt"),
+                                                      p(
+                                                        class="margin-bottom:0.3em;",
+                                                        "Wenden Sie sich bei",
+                                                        span("inhaltlichen Rückfragen", style = "font-weight: 700;"),
+                                                        "an:"
+                                                      ),
+                                                      tags$a(href = "mailto:michael.sailer@uni-a.de", "Prof. Dr. Michael Sailer"),
+                                                      p("Lehrstuhl für ",
+                                                        tags$a(href = "https://www.uni-augsburg.de/de/fakultaet/philsoz/fakultat/learning-analytics/", target = "_blank", "Learning Analytics and Educational Data Mining"),
+                                                      ),
+                                                      p(
+                                                        "Wenden Sie sich bei",
+                                                        span("technischen Rückfragen", style = "font-weight: 700;"),
+                                                        "an:"
+                                                      ),
+                                                      tags$a(href = "mailto:vincent.dusanek@uni-a.de", "Vincent Dusanek"),
+                                                      p("",
+                                                        tags$a(href = "https://digillab.uni-augsburg.de", target = "_blank", "Zentrum für digitales Lehren und Lernen (DigiLLab)"),
+                                                      ),
+                                                    ),
+                                                    div(
+                                                      style="padding-left: 1em; padding-right: 1em; padding-bottom: 1em;",
+                                                      h3(
+                                                        style="margin-top:0;",
+                                                        "Lizenz"),
+                                                      p("Version 1.1: 04:2025"),
+                                                      p(
+                                                        class="margin-bottom:0.3em;",
+                                                        "Der Empirische Forschungsmethoden (EFM)-Trainer ist eine Applikation zur Vermittlung und Anwendung empirischer Forschungsmethoden. Weiterentwickelt von Vincent Dusanek und Norman Szabo für DigiLLab im Rahmen eines Projektantrags des Lehrstuhls für",
+                                                          tags$a(href = "https://www.uni-augsburg.de/de/fakultaet/philsoz/fakultat/learning-analytics/", target = "_blank", "Learning Analytics and Educational Data Mining"),
+                                                          "2025,",
+                                                          tags$a(href = "https://tlo.mit.edu/understand-ip/exploring-mit-open-source-license-comprehensive-guide", target = "_blank", "MIT-Lizenz"),"."
+                                                      ),
+                                                      tags$hr(),
+                                                      actionButton("backButton", "Zurück zur App", icon = icon("arrow-left"))
+                                                    )
+                                                  )
+                                                )
+                                              ),
+                                              hidden(
+                                                div(id = "hilfeBox", class = "hilfe-page", style = "max-width: auto;",
+                                                  box(width = 12,
+                                                    div(
+                                                      style="padding-left: 1em; padding-right: 1em;",
+                                                      h3("Anleitung"),
+                                                      
+                                                      # eingebettetes YouTube-Video
+                                                      # Responsive YouTube-Embed
+                                                      tags$ol(
+                                                        tags$li("Wählen Sie einen Test aus dem Dropdown-Menü aus."),
+                                                        tags$li("Falls gewünscht, aktivieren Sie die Option 'Voraussetzungen testen'."),
+                                                        tags$li("Entscheiden Sie sich zwischen statischem und dynamischem Feedback."),
+                                                        tags$li("Klicken Sie auf 'Neue Aufgabe', um eine neue Übungsfrage zu generieren."),
+                                                        tags$li("Tragen Sie Ihre Lösung ein und klicken Sie auf 'Lösung anzeigen', um Feedback zu erhalten. Wiederholen Sie diesen Schritt, um dynamisches/ statisches Feedback zu erhalten."),
+                                                        tags$li("Nutzen Sie das Feedback, um Ihr Wissen zu vertiefen und Ihre Kompetenzen zu verbessern.")
+                                                      ),
+                                                      tags$div(
+                                                        style = "position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 1em;",
+                                                        tags$iframe(
+                                                          src = "https://www.youtube.com/embed/lTK4_UYtie0",
+                                                          style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%;",
+                                                          frameborder = "0",
+                                                          allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+                                                          allowfullscreen = NA
+                                                        )
+                                                      ),
+                                                      tags$hr(),
+                                                      actionButton("backFromHelpButton", "Zurück zur App", icon = icon("arrow-left"))
+                                                    )
+        )
+      )
+    ),
   ))

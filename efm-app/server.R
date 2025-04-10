@@ -2639,6 +2639,7 @@ server <- function(input, output, session) {
     shinyjs::hide("box3")
     shinyjs::hide("textSolution")
     shinyjs::hide("aboutBox")
+    shinyjs::hide("hilfeBox")
   })
   
   observeEvent(input$selectTest, {
@@ -2658,13 +2659,29 @@ server <- function(input, output, session) {
   shinyjs::hide("box1")
   shinyjs::hide("box2")
   shinyjs::hide("box3")
+  shinyjs::hide("hilfeBox")
   shinyjs::show("aboutBox")
 })
 observeEvent(input$backButton, {
   shinyjs::hide("aboutBox")
+  shinyjs::hide("hilfeBox")
   shinyjs::show("box1")
   shinyjs::show("box2")
   shinyjs::show("box3")
 })
+observeEvent(input$showHelp, {
+  shinyjs::hide("box1")
+  shinyjs::hide("box2")
+  shinyjs::hide("box3")
+  shinyjs::hide("aboutBox")
+  shinyjs::show("hilfeBox")
+})
+observeEvent(input$backFromHelpButton, {
+  shinyjs::hide("hilfeBox")
+  shinyjs::show("box1")
+  shinyjs::show("box2")
+  shinyjs::show("box3")
+})
+
 
 }
