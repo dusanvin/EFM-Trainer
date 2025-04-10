@@ -1,5 +1,5 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
-![efm-trainer](https://github.com/user-attachments/assets/7dfa8e48-e4b6-49eb-81d7-2442bc752ea0)
+![efm](https://github.com/user-attachments/assets/aad5d855-39b9-46c5-b41b-98c1b72a7cde)
 
 [Zur Projektbeschreibung](Projektbeschreibung_EFM-Trainer.md)
 
