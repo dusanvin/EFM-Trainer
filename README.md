@@ -1,5 +1,12 @@
 # EFM-Trainer (Shiny App mit GPT-Anbindung)
+## Anwendung: Statisches Feedback und KI-basiertes dynamisches Feedback
 ![efm](https://github.com/user-attachments/assets/aad5d855-39b9-46c5-b41b-98c1b72a7cde)
+
+### Statisches Feedback
+![Screenshot 2025-04-10 at 14-39-06 ](https://github.com/user-attachments/assets/52dbbe07-f7ff-41fb-9d58-c0ad92185d84)
+
+### KI-basiertes dynamisches Feedback
+![Screenshot 2025-04-10 at 14-39-28 ](https://github.com/user-attachments/assets/40cc4690-a977-4106-88b5-fde71fad6d95)
 
 [Zur Projektbeschreibung](Projektbeschreibung_EFM-Trainer.md)
 
