@@ -18,7 +18,6 @@ library(httr)
 library(markdown)
 library(dotenv)
 
-
 # Anbindung
 dotenv::load_dot_env()
 Sys.setenv(OPENAI_API_KEY = Sys.getenv("OPENAI_API_KEY"))
